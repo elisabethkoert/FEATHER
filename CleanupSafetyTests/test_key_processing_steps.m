@@ -1,4 +1,7 @@
 function out = test_key_processing_steps(cfg)
+% Optionally runs important processing initializers (ABR and IC) from config.
+% Use this to check that core processing calls still execute after deletions.
+% Which steps run is controlled by cfg.runAllBerabrInit and cfg.runAllIcmeInit.
 name = "key processing steps";
 
 if ~cs_has_required_setup(cfg)

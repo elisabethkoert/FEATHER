@@ -1,5 +1,8 @@
 function results = runCleanupSafetySuite(cfg)
 % Runs cleanup safety tests before deleting FEATHER code.
+% Think of this as the main entry point of the safety suite.
+% It runs all focused checks one by one and prints a compact summary.
+% If any test fails, this function throws an error to stop unsafe cleanup.
 
 if nargin < 1 || isempty(cfg)
     cfg = cleanupSafetyDefaultConfig();

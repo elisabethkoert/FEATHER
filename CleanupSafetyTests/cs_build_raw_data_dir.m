@@ -1,4 +1,7 @@
 function D = cs_build_raw_data_dir(cfg)
+% Builds the anex RawDataDir struct array from config path parts + data types.
+% Each entry points to the same experiment folder but with a different type tag.
+% This helper centralizes directory-shape creation for consistent test setup.
 rawParts = string(cfg.rawDataDirParts);
 types = string(cfg.requiredRawDataTypes);
 

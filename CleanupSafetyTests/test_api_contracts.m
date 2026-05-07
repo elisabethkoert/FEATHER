@@ -1,4 +1,7 @@
 function out = test_api_contracts(cfg)
+% Checks that required FEATHER object properties/methods still exist.
+% In other words, this guards the expected API "shape" used by the suite.
+% It helps catch accidental breaking changes during cleanup/refactoring.
 name = "API contracts";
 
 if ~cs_has_required_setup(cfg)

@@ -1,4 +1,7 @@
 function ee = cs_get_or_create_anex(cfg, forceNew)
+% Returns an anex object for tests, loading existing state when possible.
+% If forceNew is true (or load fails), it creates and initializes a new one.
+% This keeps test setup robust while still reusing existing experiment data.
 if nargin < 2
     forceNew = false;
 end

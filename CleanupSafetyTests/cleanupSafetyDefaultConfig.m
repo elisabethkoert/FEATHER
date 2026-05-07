@@ -1,5 +1,9 @@
 function cfg = cleanupSafetyDefaultConfig()
 % Default config for CleanupSafetyTests.
+% This function creates one central settings struct used by all cleanup tests.
+% Fill in dataset-specific values (such as expID and paths) before running.
+% If you are unsure what to edit first, start with expID, regressionDataRoot,
+% and rawDataDirParts, then keep other defaults as they are.
 
 thisFile = mfilename('fullpath');
 thisDir = fileparts(thisFile);

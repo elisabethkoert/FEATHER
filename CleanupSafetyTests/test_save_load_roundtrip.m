@@ -1,4 +1,7 @@
 function out = test_save_load_roundtrip(cfg)
+% Confirms that saving and loading key objects does not change core values.
+% It always checks anex roundtrip behavior and can also check one IC object.
+% This protects against regressions where persisted data becomes inconsistent.
 name = "save/load roundtrip";
 
 if ~cs_has_required_setup(cfg)

@@ -1,4 +1,7 @@
 function out = test_raw_data_listing_loading(cfg)
+% Checks whether raw ABR/IC data can be listed from the configured experiment.
+% This confirms the suite can see expected raw inputs before processing.
+% The test reports simple counts so you can quickly spot missing data issues.
 name = "raw-data listing/loading";
 
 if ~cs_has_required_setup(cfg)

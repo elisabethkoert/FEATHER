@@ -1,4 +1,7 @@
 function cs_prepare_environment(cfg)
+% Applies shared runtime setup used by all cleanup tests.
+% This configures MATLAB path mapping, processed-data location, and user IDs
+% so tests run in a predictable and repeatable environment.
 addpath(genpath(char(cfg.toolboxRoot)));
 ukonmap(char(cfg.regressionDataRoot));
 

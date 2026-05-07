@@ -1,4 +1,7 @@
 function out = test_object_session_creation(cfg)
+% Verifies that an anex object can be created and loaded back successfully.
+% This is a basic health check for object/session setup before deeper tests.
+% It confirms IDs and raw-data type configuration survive a save/load cycle.
 name = "object/session creation";
 
 if ~cs_has_required_setup(cfg)

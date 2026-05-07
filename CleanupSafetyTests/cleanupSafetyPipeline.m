@@ -1,5 +1,9 @@
 function summary = cleanupSafetyPipeline(cfg)
 % Core non-interactive pipeline used by smoke and dependency checks.
+% This function performs the most important ABR/IC listing and processing steps
+% and records key counts into one summary struct.
+% The summary is saved to disk so it can be compared with a golden baseline.
+% It is intentionally simple and deterministic to support safe deletion checks.
 
 cs_prepare_environment(cfg);
 ee = cs_get_or_create_anex(cfg, false);

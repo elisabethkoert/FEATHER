@@ -1,4 +1,7 @@
 function out = test_manuscript_smoke(cfg)
+% Runs the core smoke pipeline and compares results with a golden baseline.
+% Baseline mode generates the golden file once; normal mode compares against it.
+% This is the main regression check used before/after deletion batches.
 name = "manuscript smoke";
 
 if ~cs_has_required_setup(cfg)

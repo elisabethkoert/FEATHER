@@ -1,4 +1,7 @@
 function out = test_dependency_guard(cfg)
+% Detects whether files you deleted are still needed by the smoke pipeline.
+% Provide deleted file paths in cfg.deletedCandidates to activate this check.
+% If any candidate is still required transitively, the test fails.
 name = "dependency guard";
 
 if ~cs_has_required_setup(cfg)
