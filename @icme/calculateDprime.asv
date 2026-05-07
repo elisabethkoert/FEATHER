@@ -1,0 +1,171 @@
+function [d_prime_results] = calculateDprime(obj ,mode,stim_criteria_array,t_start,t_stop)
+% icme\calculateDprime calculates d' values by comparing spike rate distributions
+% either between consecutive stimuli (mode=increasingLvl) or with a baseline
+%(same timewindow before the trigger, but max 50 ms)
+%
+% input:
+% obj (icme) IC recording object, 
+% mode (str) eihter increasingLvl or baseline
+% % stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [collum in stimlist, min value, max value]
+%      the y axis/sorted parameter for increasinglvl will be the property described in the first row
+%      exp. [1,500,32000;4,50,90] a pure tone btw 500 and 32000 Hz with
+%      50-90 dB (increasing lvl sorts by frequency)
+%      exp.  [1,5,60;3,1,1] a pulse btw 5 and 60 mW with a duration of 1 ms
+% t_start (double) start of timewindow in which to extract the spike rate
+% t_stop (double) stop of time window in which to analysie the spike rate
+% output
+% d_prime_results structure with:
+%   intensities=sortLvl; % changing values (eg intensity in mW) that were compared to each other in the d' analysis
+%   d_prime_cumsum=all_Dprimes_cumsum;%32 x num_levels-1
+%   d_prime_Mats=all_DprimeMats; % 32xnum_levels-1
+%    d_prime_array=d_prime_array; % investigated d' values
+%   thresholds_by_channel_Cum=thresholds_by_channel; % n_d_prime_values x
+%       n_elecs containing the threshold values for the given d' in the d_prime_cumsum
+%  thresholds_by_channel_base=thresholds_by_channel; % n_d_prime_values x
+%       n_elecs containing the threshold values for the given d' in the d_prime_Mats
+%   thresholds = min(thresholds_by_channel,[],'omitnan');
+
+% since it takes less than 5 s to run, this results are not saved in the
+% processed data dir anymore
+
+    if nargin <=2 & ~exist('t_start') & ~exist('t_stop')
+        t_start = 0;% time before and after a trigger that is supposed to be investigated
+        t_stop = 50; % default 50 ms after trigger
+    end
+
+     % try if the cur_fixed_stim can be changed to the calibrated  value
+    if isfield(obj.C,'stimlistCal')
+        OBJ_stimlist=obj.C.stimlistCal;
+    else
+        OBJ_stimlist=obj.Stim.stimlist;
+    end
+
+      % figure out which stimuli are investigated
+    stim_ID=1:1:length(OBJ_stimlist(:,1));
+    for jj=1:size(stim_criteria_array,1)
+        stim_ID_1=find(OBJ_stimlist(:,stim_criteria_array(jj,1))>=stim_criteria_array(jj,2));
+        stim_ID = stim_ID(ismember(stim_ID, stim_ID_1));
+        stim_ID_2=find(OBJ_stimlist(:,stim_criteria_array(jj,1))<=stim_criteria_array(jj,3));
+        stim_ID = stim_ID(ismember(stim_ID, stim_ID_2));
+    end
+
+
+    % get the spike rates    
+    [meanSpikeRates, spikeRateAllReps]  = calculateSpikeRate(obj,t_start,t_stop); % ToDo figure out how to get cache on here
+    % restrict to wanted stimuli only
+    meanSpikeRates=meanSpikeRates(:,stim_ID);
+    spikeRateAllReps=spikeRateAllReps(:,stim_ID,:);
+     % initialize variables
+    all_electrodes = obj.SL.all_electrodes; 
+    
+  
+    if strcmp(mode,'increasingLvl')
+        % since we are calculating based on the spike rate in the
+        % previous level we need to sort the levels 
+        [stimuli, iStimuli] = sort(unique(OBJ_stimlist(stim_ID, stim_criteria_array(1,1)),'stable'));
+        nComp= length(stim_ID)-1; % numebr of comparisons needed for d' analysis
+        
+    elseif strcmp(mode,'baseline')
+        stimuli=OBJ_stimlist(stim_ID,  stim_criteria_array(1,1));
+        iStimuli =1:1:length(stimuli);
+        %calculate baseline as time window before trigger 
+        time_before_trigger=abs(t_stop-t_start);
+        if time_before_trigger>50
+            time_before_trigger=50;
+        end
+        [meanSpikeRatesBaseline, spikeRateAllRepsBaseline]  = calculateSpikeRate(obj,-time_before_trigger,0); 
+        % restrict to wanted stimuli only
+        meanSpikeRatesBaseline=meanSpikeRatesBaseline(:,stim_ID);
+        spikeRateAllRepsBaseline=spikeRateAllRepsBaseline(:,stim_ID,:);
+        nComp= length(stim_ID); % numebr of comparisons needed for d' analysis per electrode
+    else
+        disp('unknown mode')
+        d_prime_results={};
+        return
+    end
+
+    all_Dprime_array = zeros(size(meanSpikeRates,1), nComp); % 32 x numStimuli for all d' at all electrodes
+    % calculate d' for each electrode
+    for yy = 1:length(all_electrodes)
+        StimResp =  spikeRateAllReps(yy,:,:); % we need to look at the spikerates in each rep of the same stimuli to get a distribution
+        if strcmp(mode,'baseline')
+                StimRespBaseline =  spikeRateAllRepsBaseline(yy,:,:);
+        end
+        DprimeMat = zeros(nComp,1); 
+        ROC = cell(nComp,1); 
+        AUCMat = zeros(nComp,2);
+        % ROC analysis
+        for curStimComp = 1:nComp
+            
+            if strcmp(mode,'increasingLvl')
+                N = StimResp(1,iStimuli(curStimComp),:); 
+                N = N(1,:);
+                P = StimResp(1,iStimuli(curStimComp+1),:);
+                P = P(1,:);
+            elseif strcmp(mode,'baseline') % in Maria Michael's paper they switched N and P to avoid negative d' values
+                P = StimResp(1,iStimuli(curStimComp),:); 
+                P = P(1,:);
+                N = StimRespBaseline(1,iStimuli(curStimComp),:);
+                N = N(1,:);
+            end
+            [ROCmat, AUC, Dprime, SE] = ROCAna_03(obj,N, P, 0);
+            DprimeMat(curStimComp,1) = Dprime;
+            AUCMat(curStimComp,1:2) = [AUC, SE];
+            ROC{curStimComp,1} = ROCmat;
+        end
+        all_Dprime_array(yy, :) = DprimeMat';
+    end
+    all_Dprimes_cumsum = cumsum(all_Dprime_array, 2);
+
+
+    % analyse threshold intensities [mW] for specific d' values
+    analyzed_d_primes=0.5:0.5:4;
+    if strcmp(mode,'increasingLvl')
+        d_prime_intensities=stimuli(2:end);
+    elseif strcmp(mode,'baseline')
+        d_prime_intensities=stimuli;
+        % ToDo decide if in basleine case we want to get the thresholds
+        % in the cum d prime or just in d' array
+    end
+
+    thresholds_by_channel_Cum = nan(length(analyzed_d_primes), length(all_electrodes))';
+    for d_prime_i=1:length(analyzed_d_primes)
+            % find the threshold value
+            cur_d_prime=analyzed_d_primes(d_prime_i);
+            for elec_i=1:length(all_electrodes)
+                indices=find(all_Dprimes_cumsum(elec_i,:)>cur_d_prime);
+                if ~isempty(indices)
+                    thresholds_by_channel_Cum(elec_i,d_prime_i)=min(d_prime_intensities(indices));
+                end
+            end  
+    end    
+
+    thresholds_by_channel_baseline = nan(length(analyzed_d_primes), length(all_electrodes))';
+    for d_prime_i=1:length(analyzed_d_primes)
+            % find the threshold value
+            cur_d_prime=analyzed_d_primes(d_prime_i);
+            for elec_i=1:length(all_electrodes)
+                indices=find(all_Dprime_array(elec_i,:)>cur_d_prime);
+                if ~isempty(indices)
+                    thresholds_by_channel_baseline(elec_i,d_prime_i)=min(d_prime_intensities(indices));
+                end
+            end  
+    end    
+
+    d_prime_results.t_start=t_start;
+    d_prime_results.t_stop = t_stop;
+    d_prime_results.mode = mode;
+    d_prime_results.stim_criteria_array = stim_criteria_array;
+    d_prime_results.stimuli=stimuli; % changing values (eg intensity in mW) that were compared to each other in the d' analysis
+    d_prime_results.all_Dprime_cumsum=all_Dprimes_cumsum;%32 x length(stimuli)
+    d_prime_results.all_Dprime_array=all_Dprime_array; % 32xlength(stimuli)
+    d_prime_results.analyzed_d_prime_array=analyzed_d_primes; % investigated d' values for threshholding
+    d_prime_results.thresholds_by_channel_Cum=thresholds_by_channel_Cum; % n__analyzed d_prime_values x n_elecs containing the threshold values for the given d' in the CumSum
+    d_prime_results.thresholds_by_channel_base=thresholds_by_channel_baseline; % n__analyzed d_prime_values x n_elecs containing the threshold values for the given d' in the comparison with Baseline
+    d_prime_results.thresholds = min(thresholds_by_channel_Cum,[],'omitnan'); % 1x n_analzed d'values threshold for each analyzed d'
+end
+
+
+
+            
+        

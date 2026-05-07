@@ -1,0 +1,56 @@
+function Out = crossCorThreshold(B, Bin)
+
+if nargin==1
+    Bin = 1:B.nTraces;
+end
+%constants
+freqAcq = B.ExpInfo.FreqAcqBera;
+
+% data subgroups
+nTraces =Bin;
+
+% samplesAnalyzed = 411+50; % (600*8.2/12) % that is 411 samples for 8.2 ms, 100 is the 50 delay and the 50 before the stimulus presentation
+for jj = 1:numel(nTraces)
+    B.F(nTraces(jj)).ABR=B.F(nTraces(jj)).ABR(51:end);
+    B.F(nTraces(jj)).t=B.F(nTraces(jj)).t(51:end);
+    B.F(nTraces(jj)).stim = B.F(nTraces(jj)).stim(51:end);
+    [cc, lagsCC] = xcorr(B.F(nTraces(jj)).ABR, B.F(nTraces(jj)).stim, 'coeff');
+    [max_corr(jj), max_idx] = max(cc);  % max_corr is the peak value, max_idx is the index where the peak occurs
+    lag_at_peak(jj) = lagsCC(max_idx);    % lag_at_peak gives you the time shift (lag) where the peak occurs
+end
+
+figure()
+% plot all the beras
+subplot(1,3,1:2)
+for jj = 1:numel(nTraces)
+    plot(B.F(nTraces(jj)).t, B.F(nTraces(jj)).ABR.*7e5+jj*1,'-','Color',[0.3 0.3 0.3]);
+    hold on
+    try    scatter(B.F(nTraces(jj)).t(lag_at_peak(jj)), B.F(nTraces(jj)).ABR(lag_at_peak(jj)).*7e5+jj*1 ,'or')
+    catch
+        'there was one scatetr point missing'
+    end
+end
+title(strcat(B.ExpID,' ',B.SeriesID));
+xlabel('Time (ms)')
+%ylim([-5,95])
+%xlim([0,8])
+set(gca,'box','off','tickdir','out','fontname','arial','fontsize',12)
+
+subplot(2,3,3)
+%cc_peak_norm=normalize(max_corr,'range');
+% plot(1:B.nTraces,cc_peak_norm)
+plot(nTraces,max_corr)
+hold on
+%scatter(1:B.nTraces,cc_peak_norm)
+set(gca,'xdir','reverse','box','off','tickdir','out','fontname','arial','fontsize',12);
+xlabel('stimCondition')
+ylabel('CC peak amplitude')
+
+subplot(2,3,6)
+plot(nTraces,lag_at_peak*1/freqAcq*1e3)
+hold on
+scatter(nTraces,lag_at_peak*1/freqAcq*1e3)
+set(gca,'xdir','reverse','box','off','tickdir','out','fontname','arial','fontsize',12);
+xlabel('stimCondition')
+ylabel('lag')
+

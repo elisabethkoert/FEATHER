@@ -1,0 +1,46 @@
+function D = genProcessedDataDir(ExperimenterID,in_dir)
+% genProcessedDataDir - generates the directory where the processed data
+% are found. It only requires input from the user for the experimenterID
+% (following under whose name data are found in the archiv). The ukon mapp
+% is retrieved by ukonmap function. It is a persitent variable.
+% AV :':\home\avavakou\data\AV
+% TH ':\home\vhunniford\Vavakou_Analysis\data\TH'
+
+
+persistent Dstate
+
+
+if nargin==1, %set
+    switch userID % I use the user ID so I know where to look for the processed data
+        case'AV'
+            Dstate = strcat(ukonmap,fullfile(':\home\avavakou\data',ExperimenterID));
+        case'TH'
+            Dstate = strcat(ukonmap,fullfile(':\home\vhunniford\Vavakou_Analysis\data',ExperimenterID));
+        case'JG'
+            Dstate = strcat(ukonmap,fullfile(':\home\jgoetz\featherTB_data\data',ExperimenterID));
+        case'EK'
+            Dstate = strcat(ukonmap,fullfile(':\UKON100\home\ekoert\data',ExperimenterID));
+        otherwise
+            error('processed data folder not yet initiated in genProcessedDataDir for this user')
+%             Dstate = strcat(ukonmap,fullfile(':\UKON100\home\ekoert\data',ExperimenterID));
+    end
+end
+
+if nargin >1 & ~isempty(in_dir), %set
+    testSafeDir(in_dir);
+    Dstate = in_dir;
+end
+
+if isempty(Dstate)
+    Dstate = ''; %default is empty
+end
+
+if nargout>0 || nargin <1,
+    D = Dstate;
+end
+
+D = Dstate;
+
+end
+
+

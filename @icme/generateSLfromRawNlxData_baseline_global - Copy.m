@@ -1,0 +1,617 @@
+function  [spik_lists_all,used_analysis_parameters,all_electrode_names]=generateSLfromRawNlxData_baseline_global(IC,threshold,pre_time,post_time,ref_time,...
+    low_filt,high_filt,filt_ord,prestimrectime,poststimrectime,use_artefact_removal)
+%% ========================================================================
+% icme/generateSLfromRawNlxData 
+%  ========================================================================
+% Extracts the Inferior colliculus multiunit activity from the NLX raw data.
+% input:
+%   IC (ICME) IC recording to be analysed
+%   optional:
+%       threshold; double (default 3) to adjust spike threshold
+%       pre_time; post_time;  % waveform-window around a detected spike [ms]
+%       ref_time;    % refractory period [ms]
+%       low_filt, high_filt;filt_ord; % bandpass filter properties in beginning of data processing
+%       prestimrectime; poststimrectime % time around trigger that spikes
+%           are extracted from [ms]
+%       use_artefact_removal (bool) a global mean for each timepoint is
+%       substracted to minimize stimulation artefacts 
+% output:
+%   spik_list_all (struct with fields named after each electrode containing
+%       the Spik_list for each of these electrodes. Spik_list has for each
+%           detected spike one row with the collumns  (1 stim, 2 n_rep, 3 ypos ( (stim-1)+1/max(Header.n_rep)*n_rep for easier raster plot generation 4
+%       chan 5 unit ID (only with spike sorting so not implemented) 6 time after trigger
+% used_analysis_parameters (struct) used analysis parameters including
+%       threshold; % treshold [V?] to detect multiunit activity as spike
+%       pre_time; post_time;  % waveform-window around a detected spike
+%       ref_time;    % refractory period [ms]?
+%       low_filt, high_filt;filt_ord; %bandpass filter in beginning of data processing
+%       prestimrectime; poststimrectime % time around trigger that spikes are
+%       extracteed
+%       num_removed_spikes: number of spieks removed in artefact removal
+% all_electrode_names (struct with names elec0 -elec31 )
+
+% EK 04.02.2025: changes compared to old spike extraction: 
+%   refactory time removed since mutliunit activity
+%   Used only the 100 ms before trigger for threshold estimation not the
+%   whole data
+%
+% Author: Elisabeth  Koert, modified by Anna Vavakou and Niels Albrecht
+% Affiliation: Institute for Auditory Neuroscience, Inner Ear Lab &
+% Auditory Circuit Lab, Göttingen, Germany
+% Last changed date: 19.11.2025
+%
+%% initialize sorting parameters
+if nargin==1
+    threshold = 4.0; % threshold for waveform extraction (in MAD)
+    pre_time = 0.5;
+    post_time = 1; % waveform-window
+    ref_time = 0; % refractory period
+    low_filt = 600;
+    high_filt = 6000;
+    filt_ord = 4; % filter settings
+    % time in ms around trigger that the spikes are extracted
+    prestimrectime = 150;
+    poststimrectime= 150;
+    use_artefact_removal=1;
+end
+
+% -------------------------------------------
+ %% get stimulation info and raw data files
+% find the raw data files
+p_dat =   IC.ExpInfo.RawDataFolder{1}(strfind( IC.ExpInfo.RawDataFolder{1}, IC.ExpInfo.animal_ID)+length(IC.ExpInfo.animal_ID)+1:end);
+rawFiles = dir(fullfile(gen_dir_name(IC.D.dir), p_dat, '*.ncs'));
+eventFiles = dir(fullfile(gen_dir_name(IC.D.dir), p_dat,'*.nev'));
+% get event info
+filename_evt = fullfile(eventFiles.folder,eventFiles.name);
+[evt.TimeStamps, evt.EventIDs, evt.TTLs, evt.Extras, evt.EventStrings] = ...
+    Nlx2MatEV(filename_evt, [1 1 1 1 1], 0, 1, 0 );
+% -------------------------------------------
+
+%% Extract the event files.
+% Prepare the basic stim_list/event IDs and triggers.
+% Resort any missorted timestamps/triggers.
+[sortedTimeStamps, sortIdx] = sort(evt.TimeStamps);
+% Apply the same sorting to EventIDs, TTLs, EventStrings
+evt.TimeStamps = evt.TimeStamps (sortIdx);
+evt.EventIDs = evt.EventIDs (sortIdx);
+evt.TTLs = evt.TTLs (sortIdx);
+evt.Extras = evt.Extras (:,sortIdx);
+evt.EventStrings = evt.EventStrings(sortIdx);
+%
+% get recording start and stop timepoint
+IdxStartRecording =  find(contains( [evt.EventStrings(:)], 'Starting Recording')); 
+IdxStopRecording =  find(contains( [evt.EventStrings(:)], 'Stopping Recording'));
+% check if we accidently have a wrong recording in here
+if length(IdxStartRecording)>1
+    % cut out everything before the last recording start
+    evt.TimeStamps = evt.TimeStamps (IdxStartRecording(end):end);
+    evt.EventIDs = evt.EventIDs (IdxStartRecording(end):end);
+    evt.TTLs = evt.TTLs (IdxStartRecording(end):end);
+    evt.Extras = evt.Extras (:,IdxStartRecording(end):end);
+    evt.EventStrings = evt.EventStrings(IdxStartRecording(end):end);
+end
+%
+% get recording start and stop timepoint
+IdxStartRecording =  find(contains( [evt.EventStrings(:)], 'Starting Recording'));
+IdxStopRecording =  find(contains( [evt.EventStrings(:)], 'Stopping Recording')); 
+%
+% get all timepoints of Trial info
+stim__descriptor_Idx = find(cellfun(@(x) contains(x, 'Trial = '), evt.EventStrings, 'UniformOutput', true));
+stim_names2  =  [evt.EventStrings(stim__descriptor_Idx)]; %EventString
+%
+% -------------------------------------------
+%% Do some sanity checks to check for corrupted data
+% check for duplicates
+vals = cellfun(@(s) sscanf(s, 'Trial = %d; Stim = %d;').', stim_names2, 'UniformOutput', false);
+M = vertcat(vals{:});
+TrialIDs=M(:,1);
+StimListID=M(:,2);
+num_of_trials=length(TrialIDs);
+num_applied_stimuli=length(unique(StimListID));
+names_applied_stimuli=unique(StimListID);
+%
+if num_applied_stimuli ~= size(IC.Stim.stimlist,1)
+        error(sprintf('num of found stimuli in raw data not same as IC.stimlist for %s',IC.SeriesID))
+end
+if (num_of_trials~=num_applied_stimuli*IC.Stim.n_rep)
+    error(sprintf('not all repetitions found in data for %s',IC.SeriesID))
+end
+
+if any(diff(TrialIDs)~=1)
+    % check if error persists without sorting and undo sorting if necessary
+    % (was the case for some recordings)
+    filename_evt = fullfile(eventFiles.folder,eventFiles.name);
+        [evt.TimeStamps, evt.EventIDs, evt.TTLs, evt.Extras, evt.EventStrings] = ...
+    Nlx2MatEV(filename_evt, [1 1 1 1 1], 0, 1, 0 );
+    % get all timepoints of Trial info
+    stim__descriptor_Idx = find(cellfun(@(x) contains(x, 'Trial = '), evt.EventStrings, 'UniformOutput', true));
+    stim_names2  =  [evt.EventStrings(stim__descriptor_Idx)]; %EventString
+    vals = cellfun(@(s) sscanf(s, 'Trial = %d; Stim = %d;').', stim_names2, 'UniformOutput', false);
+    M = vertcat(vals{:});
+    TrialIDs=M(:,1);
+    StimListID=M(:,2);
+    if any(diff(TrialIDs)~=1) %error persists
+            error(sprintf('trial nubers of triggers are not constantly counting up for %s',IC.SeriesID))
+    end
+end
+
+% find all the trigger timepoints
+idx_triggers= find(contains( [evt.EventStrings(:)], '(0x0001)')); 
+num_of_triggers=length(idx_triggers);
+if num_of_triggers~=num_of_trials
+        error(sprintf('did not find the right number of tirggers for stimulus presentations for %s',IC.SeriesID))
+end
+% make the stimlist old way: first collumn: ID of the Applied stimulus (row
+% in IC.Stim.Stimlist) second collumn: rep of this sitmulus
+stim_list=zeros(num_of_triggers,2);
+stim_list(:,1) = StimListID; 
+stim_n_rep = zeros(num_applied_stimuli,1); % how often each type of applied stimulus got applied
+for iUnStim = names_applied_stimuli'
+    iCurStim = find(stim_list(:,1) == iUnStim);
+    stim_list(iCurStim,2) = 1:length(iCurStim);
+    stim_n_rep(names_applied_stimuli == iUnStim) = length(iCurStim);
+end
+
+% Collect some info regarding the triggers
+Trigger.NrTrigger = num_of_trials; % number of recorded triggers
+Trigger.TrigBeginTime = evt.TimeStamps(idx_triggers); %within each stimulus
+Trigger.RecordingBeginTime = evt.TimeStamps(IdxStartRecording); %within each stimulus
+Trigger.RecordingStopTime = evt.TimeStamps(IdxStopRecording); %within each stimulus
+Trigger.stim_list = stim_list;
+Trigger.stim_n_rep = stim_n_rep;
+Trigger.stim_names = names_applied_stimuli;
+Trigger.n_stim = num_applied_stimuli;
+
+% -------------------------------------------
+%% extraction of raw data from files, filtering and global mean calulation
+% open first channel to be able to get all info needed
+idx_channel=1;
+cur_channel =     sprintf('CSC%i.ncs',idx_channel);
+cur_channelname = char(fullfile(gen_dir_name(IC.D.dir), p_dat, cur_channel));
+[channel(idx_channel).data.Timestamps, channel(idx_channel).data.ChannelNumbers, channel(idx_channel).data.SampleFrequencies, channel(idx_channel).data.NumberOfValidSamples, channel(idx_channel).data.Samples, channel(idx_channel).data.Header] = ...
+    Nlx2MatCSC(cur_channelname,[1 1 1 1 1], 1, 1, []);
+fprintf('channel data loaded for %i \n',idx_channel)
+
+% check for possible things effecting the data that are stored within the
+% neuralynx files
+strToFind = '-ADBitVolts';
+ADBitVolts = str2num(deblank(strrep(channel(idx_channel).data.Header{strmatch(strToFind,channel(idx_channel).data.Header),:},strToFind,'')));
+% failed data chunks?
+dataInspect = mean(channel(idx_channel).data.Samples).*ADBitVolts;
+failureChunks = find(dataInspect>9.9991e-04|dataInspect<-9.9991e-04);
+dtAcqFailChunk = numel(failureChunks);
+channel(idx_channel).data.failureChunks=failureChunks;
+% input inversion
+strToFind = '-InputInverted '; InputInversion = 1;
+if isequal(deblank(strrep(channel(idx_channel).data.Header{(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true)),:},strToFind,'')), 'True')
+    InputInversion = -1;
+end
+ADBitVolts = ADBitVolts * InputInversion;
+% check for dspdelay
+strToFind = '-DspFilterDelay';
+filedIndexUTF8 =  find(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true));
+channel(idx_channel).data.Header(filedIndexUTF8) = strrep(channel(idx_channel).data.Header(filedIndexUTF8), '�s', 'us'); % Replace '�s' with 'μs' to ensure cross matlab version functionality
+DspDelay = 0;
+strToFind = '-DspDelayCompensation Disabled'; % zhe filter compensation is already enabled, so non jeed to apply additional correction
+if  ~isempty(find(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true)))
+    strToFind = '-DspFilterDelay_us ';
+    tmp_string = channel(idx_channel).data.Header( ...
+        cellfun(@(x) contains(x, strToFind), ...
+            channel(idx_channel).data.Header, ...
+            'UniformOutput', true), :);
+
+    DspDelay = str2num(deblank(strrep(tmp_string{1}, strToFind, ''))) / 1e6;
+end
+% apply the DspDelay
+channel(idx_channel).data.Timestamps = channel(idx_channel).data.Timestamps-DspDelay;
+
+% -------------------------------------------
+%%  global time vector by going through all chunks
+num_data_chunks=length(channel(idx_channel).data.Timestamps); % data is organized in chunks of 512 samples timepoints are assinged to the first sample (cf. neuralynx website)
+sample_freq=channel(idx_channel).data.SampleFrequencies(1); % does not change across chunks for Digital Lynx SX/4s (DS/BS)
+%Preallocate necessary variables
+gl_time_vec=zeros(size (channel(idx_channel).data.Samples(:)))'; 
+ix_in_vector=1;
+chunkSize = [];
+idxValidSamplesCollapsed = zeros(size(channel(idx_channel).data.Samples(:)));
+dtPosix = 1/sample_freq * 1e6 ;
+% loop thorugh all data chunks and allocate a timepoint to each sample
+% based on the timestamp of the recording and the sampling frequency
+for datachunk_ix=1:num_data_chunks
+    chunkSize = channel(idx_channel).data.NumberOfValidSamples(datachunk_ix);% usually 512, but not always!! especially at the end of the recording
+    cur_start_time=(channel(idx_channel).data.Timestamps(datachunk_ix)); % this already includes the DspDelay compensation, that is retrieved from the first channel
+    cur_time_vector=(cur_start_time:dtPosix:cur_start_time+(chunkSize-1)*dtPosix);% rational of Formula  timestamp+1/Fs*validsumaples
+    gl_time_vec(ix_in_vector:ix_in_vector+chunkSize-1)=cur_time_vector;
+    idxValidSamplesCollapsed(ix_in_vector:ix_in_vector+chunkSize-1) = 1;% collect indormation of on valid samples to later apply on sample vecctor
+    ix_in_vector=ix_in_vector+512; % indexing was wrong here, if lost data was recorded this shifted the whole recording by the lost data, fixed NA 09.02.2026
+end
+gl_time_vec = gl_time_vec(logical(idxValidSamplesCollapsed));% only keep valid samples
+%
+% Define the time vecor and trigger in seconds for plotting (optional)
+gl_time_vec_dt=datetime(gl_time_vec/1e6, 'ConvertFrom', 'posixtime', 'TimeZone', 'UTC');
+gl_time_vec_s=seconds(gl_time_vec_dt - gl_time_vec_dt(1));
+trigger_timepoints_dt=datetime(Trigger.TrigBeginTime/1e6, 'ConvertFrom', 'posixtime', 'TimeZone', 'UTC');
+trigger_timepoints_aligned_s=seconds(trigger_timepoints_dt-gl_time_vec_dt(1));
+%
+% align trigger in the recording domain
+trigger_indices_in_data_all=knnsearch(gl_time_vec',Trigger.TrigBeginTime','IncludeTies',true);% finds the sample timing that is closest to the trigger
+trigger_indices_in_data=cellfun(@(x) x(end),trigger_indices_in_data_all)'; % in case of duplicates take last one, can occurr because of overlap in sample batches/ minor clock misalignment
+% now preallocate the double for all channels
+all_samples_all_channels=zeros(size(rawFiles, 1),sum(idxValidSamplesCollapsed));
+% check if number of valid samples matched what is expected
+expectedValid = sum(channel(idx_channel).data.NumberOfValidSamples);
+assert(sum(idxValidSamplesCollapsed) == expectedValid, ...
+       'Valid-sample mask count does not match sum(NumberOfValidSamples).');
+% Extract valid samples for channel 1 
+tmpCollapsedSamples = channel(idx_channel).data.Samples(:);
+tmpCollapsedSamples = tmpCollapsedSamples (logical(idxValidSamplesCollapsed));
+% now check if the match between time vector and samples worked
+assert(numel(tmpCollapsedSamples) == numel(gl_time_vec), ...
+   'Collapsed samples and collapsed time vector have different lengths.');
+%
+all_samples_all_channels(idx_channel,:)= tmpCollapsedSamples*ADBitVolts;
+% keep the unfiltered tarce of each channel for global mean substraction
+channel(idx_channel).data_all= (all_samples_all_channels(idx_channel,:))';
+%
+% -------------------------------------------
+% now extract the rest of the channels
+for idx_channel = 2:size(rawFiles, 1)
+    cur_channel =  sprintf('CSC%i.ncs',idx_channel);
+    cur_channelname = char(fullfile(gen_dir_name(IC.D.dir), p_dat, cur_channel));
+    [channel(idx_channel).data.Timestamps, channel(idx_channel).data.ChannelNumbers, channel(idx_channel).data.SampleFrequencies, channel(idx_channel).data.NumberOfValidSamples, channel(idx_channel).data.Samples, channel(idx_channel).data.Header] = ...
+        Nlx2MatCSC(cur_channelname,[1 1 1 1 1], 1, 1, []);
+    fprintf('channel data loaded for %i \n',idx_channel)
+    % check for possibele things effecting the data that are stored within the
+    % neuralynx files
+    strToFind = '-ADBitVolts';
+    ADBitVolts = str2num(deblank(strrep(channel(idx_channel).data.Header{strmatch(strToFind,channel(idx_channel).data.Header),:},strToFind,'')));
+    % failed data chunks?
+    dataInspect = mean(channel(idx_channel).data.Samples).*ADBitVolts;
+    failureChunks = find(dataInspect>9.9991e-04|dataInspect<-9.9991e-04);
+    dtAcqFailChunk = numel(failureChunks);
+    channel(idx_channel).data.failureChunks=failureChunks;
+    % input inversion
+    strToFind = '-InputInverted '; InputInversion = 1;
+    if isequal(deblank(strrep(channel(idx_channel).data.Header{(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true)),:},strToFind,'')), 'True')
+        InputInversion = -1;
+    end
+    ADBitVolts = ADBitVolts * InputInversion;
+    % check for dspdelay
+    strToFind = '-DspFilterDelay';
+    filedIndexUTF8 =  find(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true));
+    channel(idx_channel).data.Header(filedIndexUTF8) = strrep(channel(idx_channel).data.Header(filedIndexUTF8), '�s', 'us'); % Replace '�s' with 'μs' to ensure cross matlab version functionality
+    DspDelay = 0;
+    strToFind = '-DspDelayCompensation Disabled'; % zhe filter compensation is already enabled, so non jeed to apply additional correction
+    if  ~isempty(find(cellfun(@(x) contains(x, strToFind), channel(idx_channel).data.Header, 'UniformOutput', true)))
+        strToFind = '-DspFilterDelay_us ';
+        tmp_string = channel(idx_channel).data.Header( ...
+        cellfun(@(x) contains(x, strToFind), ...
+            channel(idx_channel).data.Header, ...
+            'UniformOutput', true), :);
+
+         DspDelay = str2num(deblank(strrep(tmp_string{1}, strToFind, ''))) / 1e6;
+    end
+    % apply the DspDelay
+    channel(idx_channel).data.Timestamps = channel(idx_channel).data.Timestamps-DspDelay;
+    expectedValid = sum(channel(idx_channel).data.NumberOfValidSamples);
+    assert(sum(idxValidSamplesCollapsed) == expectedValid, ...
+       'Valid-sample mask count does not match sum(NumberOfValidSamples).');
+    % actually collect
+    tmpCollapsedSamples = channel(idx_channel).data.Samples(:);
+    tmpCollapsedSamples = tmpCollapsedSamples (logical(idxValidSamplesCollapsed));
+    % now check if the match between time vector and samples worked
+    assert(numel(tmpCollapsedSamples) == numel(gl_time_vec), ...
+       'Collapsed samples and collapsed time vector have different lengths.');
+    % assign to global array
+    all_samples_all_channels(idx_channel,:)= tmpCollapsedSamples*ADBitVolts;
+    % keep the unfiltered tarce of each channel for global mean substraction
+    channel(idx_channel).data_all= (all_samples_all_channels(idx_channel,:))';
+end
+global_mean_estimate=mean(all_samples_all_channels,1);
+clear all_samples_all_channels
+
+% -------------------------------------------
+% Graphical check off trigger time alignement and global mean (optional)
+% % 
+% figure()
+% hold on
+% plot(gl_time_vec_s,global_mean_estimate)
+% scatter(trigger_timepoints_aligned_s,mean(global_mean_estimate))
+% xlabel('time [s]')
+% ylabel('global mean estimate')
+% % 
+% figure()
+% hold on
+% plot(gl_time_vec,global_mean_estimate)
+% scatter(Trigger.TrigBeginTime,mean(global_mean_estimate))
+% xlabel('time [neuralynx domain]')
+% ylabel('global mean estimate')
+%
+% -------------------------------------------
+%% Loop through all extracted channels, extract baseline and threshold crossings (spike events)
+for idx_channel= 1: size(rawFiles, 1) % parfor
+    %% define size wveform window in datapoints
+    samples_pre = (pre_time*channel(idx_channel).data.SampleFrequencies(1))/1000;
+    samples_post = (post_time*channel(idx_channel).data.SampleFrequencies(1))/1000;
+    samples_ref = (ref_time*channel(idx_channel).data.SampleFrequencies(1))/1000;
+
+
+    %% get bandpass filtered data
+    datafilt=[];
+    if use_artefact_removal==1
+        tmpCollapsedSamples =  (channel(idx_channel).data_all-global_mean_estimate'); % apply artefact removal by substracting glbal mean if wanted
+    else
+        tmpCollapsedSamples =  channel(idx_channel).data_all;
+    end
+    datafilt= bandfilt(tmpCollapsedSamples, low_filt, high_filt, channel(idx_channel).data.SampleFrequencies(1), filt_ord );
+
+    %% extract baseline from the timewindow before triggers
+    num_samples_baseline=channel(idx_channel).data.SampleFrequencies(1)*0.098; % pick -100 ms to -2 ms before trigger for baseline
+    num_samples_beforeTrigger=channel(idx_channel).data.SampleFrequencies(1)*0.002;
+    baseline_datafilt= zeros((num_samples_baseline+1)*(Trigger.NrTrigger),1);
+    baseline_timevec = zeros((num_samples_baseline+1)*(Trigger.NrTrigger),1);
+    baseline_timevec_s = zeros((num_samples_baseline+1)*(Trigger.NrTrigger),1);
+
+    ix_helper=1;
+    % Loop over each trigger
+    for i = 1:Trigger.NrTrigger
+        % trigger timepoint
+        idx_trigger=trigger_indices_in_data(i)-num_samples_beforeTrigger; % go 2 ms before trigger to avoid any stimultation artefacts
+        baseline_datafilt(ix_helper:ix_helper+num_samples_baseline)=datafilt(idx_trigger-num_samples_baseline:idx_trigger);
+        baseline_timevec(ix_helper:ix_helper+num_samples_baseline)=gl_time_vec(1,idx_trigger-num_samples_baseline:idx_trigger);
+        baseline_timevec_s(ix_helper:ix_helper+num_samples_baseline)=gl_time_vec_s(1,idx_trigger-num_samples_baseline:idx_trigger);
+        ix_helper=ix_helper+num_samples_baseline+1;
+    end
+    % -------------------------------------------
+    %   Graphical visualization of alignement between triggers and data for
+    %   baseline calculation
+    % figure()
+    % hold on
+    % plot(gl_time_vec_s,datafilt,'b')
+    % plot(baseline_timevec_s,baseline_datafilt,'r')
+    % scatter(trigger_timepoints_aligned_s,mean(global_mean_estimate),'k','filled')
+    % xlabel('time [s]')
+    % ylabel('meaured voltage [mV]')
+    % -------------------------------------------
+
+    % -------------------------------------------
+    %% spike extraction
+    % noise estimate to decide if there is MUA (cf. Dieter et al. 2019)
+    MAD_noise_estimate = median(abs(baseline_datafilt-mean(baseline_datafilt)))/0.675;
+    waveform_threshold_low = mean(baseline_datafilt)-threshold*MAD_noise_estimate;
+    channel(idx_channel).waveform_threshold_low=waveform_threshold_low;
+
+    %Find threshold crossings and waveform windpws
+    if waveform_threshold_low > 0 % to ensure threshold crossing is detected in the right direction
+        i_thresh = 1;
+    elseif waveform_threshold_low < 0
+        i_thresh = -1;
+    end
+    wave_idcs = find(i_thresh.*datafilt(1:end-1) < i_thresh*waveform_threshold_low & i_thresh.*datafilt(2:end) > i_thresh*waveform_threshold_low);
+    wave_idcs = wave_idcs(wave_idcs > samples_pre); %Must be after samples pre 0.5ms
+    wave_idcs = wave_idcs(wave_idcs < numel(datafilt)-(samples_post+1)); %Must be after samples pre 0.5ms
+    
+    channel(idx_channel).wave_windows(1, :) = wave_idcs-samples_pre;
+    channel(idx_channel).wave_windows(2, :) = wave_idcs+samples_post;
+
+    % extract wavefrom windows for each spike   
+    num_samples_wave=(samples_pre+samples_post+1);
+    waveforms=zeros(num_samples_wave,length(channel(idx_channel).wave_windows));
+    for wave_ix=1:length(channel(idx_channel).wave_windows)
+        waveforms(:,wave_ix)=datafilt(channel(idx_channel).wave_windows(1,wave_ix):channel(idx_channel).wave_windows(2,wave_ix));
+    end
+    channel(idx_channel).waveforms = waveforms;
+    [maxval, maxloc] = max(i_thresh.*channel(idx_channel).waveforms); % location changes from threshold crossing point to peak after threshold
+    %   maxval is peak voltage (V) detected for each waveform, maxloc is the id
+
+    % align  waveforms by peak
+    wave_idcs_aligned = wave_idcs+((maxloc-samples_pre))'; % align waves by peak
+    % =======================
+    % ELECTRICAL STIMULATION
+    % Apply artefact removal here, no spike detecte -1 to +2 around each
+    % trigger
+    % extract waveforms
+    if contains(IC.ExpInfo.exp_type,'eCI')
+        Fs = channel(idx_channel).data.SampleFrequencies(1);
+
+        pre_excl  = round(0.5e-3 * Fs);   % 1 ms in samples
+        post_excl = round(2.5e-3 * Fs);   % 2 ms in samples
+
+        keep = true(size(wave_idcs_aligned));
+
+        for k = 1:numel(trigger_indices_in_data)
+            t0 = trigger_indices_in_data(k);
+            keep = keep & ~(wave_idcs_aligned >= (t0 - pre_excl) & wave_idcs_aligned <= (t0 + post_excl));
+        end
+
+        wave_idcs_aligned = wave_idcs_aligned(keep);
+    end
+    % ===============================
+    % establish refractory time after peak alignment
+    %------ 
+    spikes2keep = true(size(wave_idcs_aligned)); % preallocate logical array
+    last_spik = 1;
+    % loop through all detected threshold crossings
+    for cur_spik = 2:numel(wave_idcs_aligned)
+        if wave_idcs_aligned(cur_spik) - wave_idcs_aligned(last_spik) < samples_ref % check if distance to last detected spike < 1ms 
+            spikes2keep(cur_spik) = false;      % drop later event
+        else
+            last_spik = cur_spik;             % update last kept and keep cur_spik in wace_indice
+        end
+    end
+    wave_idcs_aligned = wave_idcs_aligned(spikes2keep);% keep spikes with enforced ref time
+    % -------
+    % also only collect correct waveforms
+    channel(idx_channel).waveforms=channel(idx_channel).waveforms(:,spikes2keep);
+    % Collect channel number 
+    channels_full = repmat(channel(idx_channel).data.ChannelNumbers, 512, 1); %this just needs to create a large enough array, 512 is maximum chunk size
+    channels_full = channels_full(:);
+    channels = channels_full(wave_idcs_aligned);
+    % find actual spike times
+    DetectTimes=gl_time_vec(wave_idcs_aligned)/10^6;%(DetectTimes-DetectTimes(1))*1/32000;
+    DetectTimes_seconds=gl_time_vec_s(wave_idcs_aligned);%(DetectTimes-DetectTimes(1))*1/32000;
+    %-------------------------------------------
+
+    
+   % collect detected APs in channel structure
+    channel(idx_channel).DetectTimes=DetectTimes;
+    channel(idx_channel).DetectTimes_seconds=DetectTimes_seconds;
+    channel(idx_channel).channels=channels;
+    channel(idx_channel).wave_idcs_aligned=wave_idcs_aligned;
+%     channel(idx_channel).datafilt=datafilt; % usually commented out as this would lead to large IC objects
+    channel(idx_channel).MAD_noise_estimate=MAD_noise_estimate;
+    disp([num2str(idx_channel), '/' num2str(size(rawFiles, 1)) ' detection done'])
+    
+end
+
+
+%-------------------------------------------
+%% get APS 
+% values before loop
+n_pres =  Trigger.NrTrigger; stim_list = Trigger.stim_list; stim_n_rep = Trigger.stim_n_rep;
+t_pre = (prestimrectime/1000);
+dur = t_pre+(poststimrectime/1000);
+% loop thtough channels (one file each)
+for idx_channel = 1: size(rawFiles, 1) %parfor
+    
+    % get detected times for this channel
+    DetectTimes=channel(idx_channel).DetectTimes;
+    channels=channel(idx_channel).channels;
+
+    %% start going through all stimulus presentations and collect APs
+    AP  = [];
+    for r = 1 : n_pres
+        % get time window for this trigger presentation
+        t1 = Trigger.TrigBeginTime(r)-t_pre*10^6;
+        t2 = t1 + dur*10^6;
+        spik_ind     = find(DetectTimes(:)*10^6 >= t1 & DetectTimes(:)*10^6 <= t2); % find all detected spikes in this timeframe
+
+        n_spik_ind   = length(spik_ind);
+        dummy_spik   = [];
+        if n_spik_ind > 0
+           % get spike information the format of the spike list 
+            dummy_spik   = [repmat([r, stim_list(r,1)],[n_spik_ind,1]), channels(spik_ind), zeros(size(spik_ind)), DetectTimes(spik_ind)',...
+                DetectTimes(spik_ind)' - Trigger.TrigBeginTime(r)'/10^6];
+
+            AP = [AP; dummy_spik];
+        end
+    end
+
+    channel(idx_channel).Spik_list = []; %add a number of nan and a condition in case it is longer than the nan - and then denan it
+    if ~isempty(AP)
+        % CONVERT THIS FORMAT (AP): r: occurence; c: 1 - trial, 2 - stimulus, 3 - ID-channel, 4 - ID-unit, 5 - ts according to file start, 6 - ts according to stimulus-onset,
+        % INTO THIS FORMAT (Spik_list); (1 stim, 2 n_rep, 3 ypos ( (stim-1)+1/max(Header.n_rep)*n_rep 4 chan 5 un 6 time
+        channel(idx_channel).Spik_list = zeros(size(AP));
+        channel(idx_channel).Spik_list(:,[1, 4, 5, 6:end])  = AP(:,[2,3,4,6:end]);
+        channel(idx_channel).Spik_list(:,2) =[stim_list(AP(:,1),2)];
+        channel(idx_channel).Spik_list(:,3) =  (AP(:,2)-1)+(1./stim_n_rep(stim_list(AP(:,1)))).*stim_list(AP(:,1),2);
+    end
+
+    disp([num2str(idx_channel), '/' num2str(size(rawFiles, 1)) ' SL done'])
+    
+end
+% add the spikeID -  this cannot be added in the  parfor
+% create structure to save all SpikeID
+countSp = 1;
+for k=1:size(channel, 2)
+    channelNsp = size(channel(k).Spik_list,1);
+    channel(k).Spik_list(:,5) = [countSp :countSp+channelNsp-1];
+    countSp = countSp+channelNsp;
+end
+%
+%-------------------------------------------
+
+
+%% save data
+% make a structure to save the analysis parameters
+used_analysis_parameters.threshold=threshold;
+used_analysis_parameters.waveform_threshold_low=[channel.waveform_threshold_low];
+used_analysis_parameters.pre_time = pre_time;
+used_analysis_parameters.post_time = post_time;  % waveform-window
+used_analysis_parameters.ref_time = ref_time;    % refractory period
+used_analysis_parameters.low_filt = low_filt;
+used_analysis_parameters.high_filt = high_filt;
+used_analysis_parameters.filt_ord = filt_ord; % filter settings
+used_analysis_parameters.prestimrectime = prestimrectime;
+used_analysis_parameters.poststimrectime = poststimrectime; %
+used_analysis_parameters.use_artefact_removal=use_artefact_removal;
+used_analysis_parameters.MUEdate=string(datetime());
+gitInfo=getGitInfo();
+used_analysis_parameters.GitHash=gitInfo.hash;
+used_analysis_parameters.GitBranch=gitInfo.branch;
+
+
+
+% create structure to save all Spik_lists
+all_electrode_names={};
+for k=1:size(rawFiles, 1)
+    analyzed_elec=channel(k).Spik_list(1,4);
+    my_field = strcat('elec',num2str(analyzed_elec));
+    spik_lists_all.(my_field) = channel(k).Spik_list;
+    all_electrode_names{k}=my_field;
+end
+
+
+%save the spik_lists sorted by electrode, the used analysis parameters, the
+%electrode name list (because all other functions need it and the trigger
+%info to later check what the time window between triggers was
+save_name = strcat(IC.ExpID,"_",IC.SeriesID,"_ICME_Resort.txt");
+if  ~isfolder(fullfile(expProcDataDir,'ICME','RESORT'))
+    mkdir(fullfile(expProcDataDir,'ICME','RESORT'));
+end
+fid = fopen(fullfile(expProcDataDir,'ICME','RESORT',save_name),'w');
+fprintf(fid,['%% This file contains the extracted multiunitactivity spikes for all electrodes for one inferior \n' ...
+    ' colliculus recording performed using ExpControl and a Neuralynx-Cheetah recording system:\n']);
+fprintf(fid,[ ...
+    'Experiment:\t%s\n' ...
+    'Experimental date:\t%s\n' ...
+    'Exp_type:\t %s\n' ], ...
+    IC.SeriesID, ...
+    eventFiles.date, ...
+    IC.Stim.exp_type);
+% write down the stimulus information
+fprintf(fid,'%% Used Stimulus information:\n');
+for i=1:length(IC.Stim.stimheader)
+    fprintf(fid,'%s',IC.Stim.stimheader{i});
+end
+fprintf(fid,'\n');
+for ii = 1:size(IC.Stim.stimlist, 1)
+    % Find the number of columns in this row
+    numCols = size(IC.Stim.stimlist, 2);
+
+    % Generate a format string for this row (e.g., '%f\t%f\t%f\n')
+    formatStr = [repmat('%f\t', 1, numCols-1) '%f\n'];
+
+    % Print this row to the file using the format string
+    fprintf(fid, formatStr, IC.Stim.stimlist(ii, :));
+end
+
+
+% write down the used analysis parameters
+fprintf(fid,'%% Used analysis parameters for MUA extraction:\n');
+fieldnames = fields(used_analysis_parameters);
+% Loop over each field and write it to the file along with the value
+for i = 1:length(fieldnames)
+    fprintf(fid, '%s : %s\n', fieldnames{i}, string(used_analysis_parameters.(fieldnames{i})));
+end
+
+
+
+% write down the spikelist
+fprintf(fid,'%% Resulting spikelist with detected MUA \n');
+fprintf(fid,'stimulus ID \t repetition of stimulus \t  ypos for easy plotting \t channel/electrode \t unitID \t spiketime');
+fclose(fid);
+
+fieldnames = fields(spik_lists_all);
+for i = 1:length(fieldnames)
+    cur_spikelist=spik_lists_all.(fieldnames{i});
+    writematrix(cur_spikelist,fullfile(expProcDataDir,'ICME','RESORT',save_name),'WriteMode','append');
+end
+
+end
+
+
+
+
+
+
