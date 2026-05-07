@@ -22,9 +22,21 @@ for ii = 1:numel(fields)
     end
     if ~isequal(golden.(char(f)), summary.(char(f)))
         ok = false;
-        msg = "Golden mismatch at field: " + f + " (expected: " + string(golden.(char(f))) + ", got: " + string(summary.(char(f))) + ")";
+        expectedVal = cs_value_to_text(golden.(char(f)));
+        actualVal = cs_value_to_text(summary.(char(f)));
+        msg = "Golden mismatch at field: " + f + " (expected: " + expectedVal + ", got: " + actualVal + ")";
         return
     end
 end
 
+end
+
+function txt = cs_value_to_text(v)
+if isstring(v) || ischar(v)
+    txt = string(v);
+elseif isnumeric(v) || islogical(v)
+    txt = string(mat2str(v));
+else
+    txt = string(class(v));
+end
 end
