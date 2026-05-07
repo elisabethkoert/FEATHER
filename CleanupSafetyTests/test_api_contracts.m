@@ -23,6 +23,7 @@ try
     info.anexPropsChecked = requiredAnexProps;
     info.anexMethodsChecked = requiredAnexMethods;
 
+    info.icmeContractError = "";
     try
         L = listIcRaw(ee);
         if isfield(L, 'IC_SeriesID') && ~isempty(L.IC_SeriesID)
@@ -33,7 +34,8 @@ try
             end
             info.icmePropsChecked = requiredIcProps;
         end
-    catch
+    catch innerME
+        info.icmeContractError = string(innerME.message);
     end
 
     out = cs_status(name, "pass", "API contract checks passed.", info);

@@ -14,7 +14,7 @@ try
     assert(string(eeReload.ExpID) == string(ee.ExpID), 'anex ExpID changed after roundtrip.');
     assert(numel(eeReload.RawDataDir) == numel(ee.RawDataDir), 'anex RawDataDir changed after roundtrip.');
 
-    info = struct('anexRoundtrip', true, 'icmeRoundtrip', false);
+    info = struct('anexRoundtrip', true, 'icmeRoundtrip', false, 'icmeRoundtripError', "");
 
     if isfield(cfg, 'runAllIcmeInit') && cfg.runAllIcmeInit
         try
@@ -28,7 +28,8 @@ try
                 assert(string(IC2.SeriesID) == sid, 'icme SeriesID changed after roundtrip.');
                 info.icmeRoundtrip = true;
             end
-        catch
+        catch innerME
+            info.icmeRoundtripError = string(innerME.message);
         end
     end
 

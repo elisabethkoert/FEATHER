@@ -14,6 +14,9 @@ summary.rawSUCount = 0;
 summary.processedABRCount = 0;
 summary.processedICCount = 0;
 summary.processedSUCount = 0;
+summary.processedABRError = "";
+summary.processedICError = "";
+summary.processedSUError = "";
 
 enablecache off
 
@@ -42,17 +45,20 @@ enablecache off
 try
     Lbp = listBerabr(ee);
     summary.processedABRCount = cs_count_field(Lbp, 'ABR_SeriesID');
-catch
+catch ME
+    summary.processedABRError = string(ME.message);
 end
 try
     Lip = listIcme(ee);
     summary.processedICCount = cs_count_field(Lip, 'IC_SeriesID');
-catch
+catch ME
+    summary.processedICError = string(ME.message);
 end
 try
     Lsp = listSutr(ee);
     summary.processedSUCount = cs_count_field(Lsp, 'SU_SeriesID');
-catch
+catch ME
+    summary.processedSUError = string(ME.message);
 end
 
 if ~isfolder(cfg.outputDir)
