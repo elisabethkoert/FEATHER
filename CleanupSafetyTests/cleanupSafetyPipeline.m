@@ -23,7 +23,7 @@ if any(rawTypes == "ABR")
     summary.rawABRCount = cs_count_field(Lb, 'ABR_SeriesID');
 end
 if any(rawTypes == "IC")
-    Li = listIcRaw(ee);
+    [Li, ~] = listIcRaw(ee);
     summary.rawICCount = cs_count_field(Li, 'IC_SeriesID');
 end
 
