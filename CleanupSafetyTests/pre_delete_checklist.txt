@@ -1,0 +1,21 @@
+FEATHER pre-delete safety checklist
+
+1) Configure cleanup suite
+   - Fill cleanupSafetyDefaultConfig values for expID, regressionDataRoot, rawDataDirParts.
+
+2) Baseline lock-in
+   - Set cfg.generateGolden = true.
+   - Run runCleanupSafetySuite(cfg).
+   - Confirm all non-skipped tests pass and golden file is generated.
+
+3) Delete a small batch only
+   - Remove only a small set of candidates.
+   - Set cfg.deletedCandidates to the exact relative paths deleted in this batch.
+
+4) Post-delete verification
+   - Set cfg.generateGolden = false.
+   - Run runCleanupSafetySuite(cfg).
+   - Keep deletion only if all tests pass.
+
+5) Repeat
+   - Continue in small batches and keep cfg.deletedCandidates updated per batch.
