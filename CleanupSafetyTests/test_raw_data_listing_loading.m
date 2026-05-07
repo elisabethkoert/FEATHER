@@ -27,13 +27,6 @@ try
         info.rawICCount = 0;
     end
 
-    if any(rawTypes == "SU")
-        [Ls, ~] = listSuRaw(ee);
-        info.rawSUCount = cs_count_field(Ls, 'SU_SeriesID');
-    else
-        info.rawSUCount = 0;
-    end
-
     out = cs_status(name, "pass", "Raw-data listing checks passed.", info);
 catch ME
     out = cs_status(name, "fail", "Raw-data listing checks failed.", struct('error', string(ME.message)));

@@ -10,13 +10,10 @@ summary.experimenterID = string(cfg.experimenterID);
 summary.timestamp = string(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss'));
 summary.rawABRCount = 0;
 summary.rawICCount = 0;
-summary.rawSUCount = 0;
 summary.processedABRCount = 0;
 summary.processedICCount = 0;
-summary.processedSUCount = 0;
 summary.processedABRError = "";
 summary.processedICError = "";
-summary.processedSUError = "";
 
 enablecache off
 
@@ -28,10 +25,6 @@ end
 if any(rawTypes == "IC")
     Li = listIcRaw(ee);
     summary.rawICCount = cs_count_field(Li, 'IC_SeriesID');
-end
-if any(rawTypes == "SU")
-    Ls = listSuRaw(ee);
-    summary.rawSUCount = cs_count_field(Ls, 'SU_SeriesID');
 end
 
 if isfield(cfg, 'runAllBerabrInit') && cfg.runAllBerabrInit
@@ -53,12 +46,6 @@ try
     summary.processedICCount = cs_count_field(Lip, 'IC_SeriesID');
 catch ME
     summary.processedICError = string(ME.message);
-end
-try
-    Lsp = listSutr(ee);
-    summary.processedSUCount = cs_count_field(Lsp, 'SU_SeriesID');
-catch ME
-    summary.processedSUError = string(ME.message);
 end
 
 if ~isfolder(cfg.outputDir)

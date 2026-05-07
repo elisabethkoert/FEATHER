@@ -4,6 +4,7 @@ Minimal, non-interactive safety suite to run **before and after deleting FEATHER
 
 ## Goal
 Provide deterministic pass/fail checks for manuscript-critical workflows so cleanup can be done in small safe batches.
+Current suite scope is ABR/IC workflows only (SU is intentionally excluded).
 
 ## Files
 - `cleanupSafetyDefaultConfig.m`: configuration template (dataset, experiment, deletion batch, golden settings)
