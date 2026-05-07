@@ -34,7 +34,7 @@ cfg.goldenFields = ["rawABRCount", "rawICCount", "processedABRCount", "processed
 cfg.generateGolden = false;
 
 % Dependency guard.
-cfg.deletionCandidatesFilePath = string(fullfile(toolboxRoot, 'fChrimsonICManuscript_deletion_candidates.txt'));
+cfg.deletedCandidatesFilePath = string(fullfile(toolboxRoot, 'fChrimsonICManuscript_deletion_candidates.txt'));
 % Paths relative to toolbox root that you already deleted or plan to delete in this batch.
 cfg.deletedCandidates = strings(1,0);
 

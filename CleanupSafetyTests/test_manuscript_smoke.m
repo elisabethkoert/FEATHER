@@ -15,7 +15,7 @@ try
     else
         [ok, msg] = compareGoldenOutputs(summary, cfg);
         if ~ok
-            out = cs_status(name, "fail", msg, summary);
+            out = cs_status(name, "fail", "Golden output comparison failed: " + msg, summary);
             return
         end
         details = "Smoke run passed and matched golden outputs.";

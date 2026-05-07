@@ -22,7 +22,7 @@ for ii = 1:numel(fields)
     end
     if ~isequal(golden.(char(f)), summary.(char(f)))
         ok = false;
-        msg = "Golden mismatch at field: " + f;
+        msg = "Golden mismatch at field: " + f + " (expected: " + string(golden.(char(f))) + ", got: " + string(summary.(char(f))) + ")";
         return
     end
 end

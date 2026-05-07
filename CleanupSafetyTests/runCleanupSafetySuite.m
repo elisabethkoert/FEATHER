@@ -25,7 +25,7 @@ for ii = 1:numel(tests)
     try
         results(ii) = f(cfg);
     catch ME
-        results(ii) = cs_status(func2str(f), "fail", "Unhandled exception", struct('error', getReport(ME, 'extended', 'hyperlinks', 'off')));
+        results(ii) = cs_status(func2str(f), "fail", "Test threw unhandled exception.", struct('error', getReport(ME, 'extended', 'hyperlinks', 'off')));
     end
     fprintf('[%s] %s - %s\n', upper(char(results(ii).status)), char(results(ii).name), char(results(ii).details));
 end
