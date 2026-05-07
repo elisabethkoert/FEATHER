@@ -1,0 +1,89 @@
+Scope
+- Goal: identify FEATHER items not required to run scripts in /home/runner/work/fChrimsonICManuscript
+- Method: direct static call matching of FEATHER function names against manuscript .m scripts
+- Important: this is a conservative "direct-call" inventory; internal/transitive dependencies were not expanded
+
+========================================
+A) FEATHER files that could get deleted (candidate list)
+========================================
+/home/runner/work/FEATHER/FEATHER/@expsess/expsess.m
+/home/runner/work/FEATHER/FEATHER/@oci/oci.m
+
+/home/runner/work/FEATHER/FEATHER/PCA/getManifold.m
+/home/runner/work/FEATHER/FEATHER/PCA/getDist_as_dPrime.m
+/home/runner/work/FEATHER/FEATHER/PCA/get_smooth.m
+/home/runner/work/FEATHER/FEATHER/PCA/applyonPC.m
+/home/runner/work/FEATHER/FEATHER/PCA/ROCAna_03.m
+/home/runner/work/FEATHER/FEATHER/PCA/getDist.m
+
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser7x7RL2Emit.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser7x74Emit2RL.m
+/home/runner/work/FEATHER/FEATHER/uLED/creeLEDParser10x1RL2Emit.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser4x4.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser4x4Emit2RL.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDBin2N.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser7x7.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDN2Bin.m
+/home/runner/work/FEATHER/FEATHER/uLED/uLEDParser4x4RL2Emit.m
+
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/TestingScript.m
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/ExampleProcessingLocalData.m
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/TestingScriptSU.m
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/TestingScript.asv
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/TestingScriptPCA_NA.m
+/home/runner/work/FEATHER/FEATHER/TestingScriptsForFeather/SpecificExperimentTests.m
+
+/home/runner/work/FEATHER/FEATHER/@icme/calculateSOEOldWay - Copy.m
+/home/runner/work/FEATHER/FEATHER/@icme/generateSLfromRawNlxData_baseline_global - Copy.m
+/home/runner/work/FEATHER/FEATHER/@icme/calculateDprime.asv
+/home/runner/work/FEATHER/FEATHER/@icme/calculateSOEOldWay.asv
+/home/runner/work/FEATHER/FEATHER/@icme/convertNLXDataForKilosort.asv
+/home/runner/work/FEATHER/FEATHER/@icme/getInterpolatedBestFrequenciesForElectrodes.asv
+/home/runner/work/FEATHER/FEATHER/@icme/generateSLfromRawNlxData_baseline_global.asv
+
+========================================
+B) Functions within FEATHER scripts/classes that appear unnecessary for manuscript scripts (directly unused)
+========================================
+@anex/anex.m
+- anex/getSUrawDir()
+- anex/getABRrawDir()
+- anex/getICrawDir()
+- anex/setProcessedDataDir()
+- anex/setExperimenterID()
+- anex/setRawDataDir()
+- anex/setUserID()
+- anex/setExpMetaData()
+- anex/listBerabrRaw()
+- anex/allSutr()
+- anex/initIcmeFolder()
+- anex/initHistoFolder()
+- anex/allSunit()
+
+@berabr/berabr.m
+- berabr/initBerabr()
+- berabr/setRawDataDir()
+- berabr/loadRaw()
+- berabr/saveBerabr()
+- berabr/ttlString()
+- berabr/inverseBerabr()
+- berabr/nanBerabr()
+- berabr/setC()
+
+@histimg/histimg.m
+- histimg/loadHistImg()
+- histimg/setRawDataDir()
+- histimg/readMicroscopeSettings()
+
+@icme/icme.m
+- icme/initIcme()
+- icme/loadLogFileInfo()
+- icme/ExtractMUAfromRawDataIntoSL()
+- icme/loadSLfeather()
+- icme/loadSLfeather_fromRESORT()
+- icme/stim()
+- icme/setRawDataDir()
+- icme/findBadElectrodes()
+
+Notes
+- "unnecessary" here means: not directly called by manuscript scripts.
+- Before deleting production code, validate with a full manuscript run because FEATHER methods can call other FEATHER methods internally.
