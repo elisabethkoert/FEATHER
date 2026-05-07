@@ -9,7 +9,7 @@ end
 try
     ee = cs_get_or_create_anex(cfg, false);
     saveAnex(ee);
-    eeReload = loadAnex(anex(cfg.expID, cfg.experimenterID, cs_build_raw_data_dir(cfg)));
+    eeReload = loadAnex(ee);
 
     assert(string(eeReload.ExpID) == string(ee.ExpID), 'anex ExpID changed after roundtrip.');
     assert(numel(eeReload.RawDataDir) == numel(ee.RawDataDir), 'anex RawDataDir changed after roundtrip.');

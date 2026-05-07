@@ -19,7 +19,8 @@ end
 try
     ee = anex(cfg.expID, cfg.experimenterID, D);
     ee = loadAnex(ee);
-catch
+catch ME
+    %#ok<NASGU> % fallback to create a new anex when load fails
     ee = anex(cfg.expID, cfg.experimenterID, D);
     if isfield(cfg, 'species') && strlength(string(cfg.species)) > 0
         ee = setAnimalSpecies(ee, cfg.species);
