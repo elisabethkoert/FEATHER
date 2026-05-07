@@ -20,12 +20,8 @@ try
         deletedAbs(ii) = string(fullfile(cfg.toolboxRoot, char(cfg.deletedCandidates(ii))));
     end
 
-    blocking = strings(1,0);
-    for ii = 1:numel(deletedAbs)
-        if any(reqFiles == deletedAbs(ii))
-            blocking(end+1) = deletedAbs(ii); %#ok<AGROW>
-        end
-    end
+    isBlocking = ismember(deletedAbs, reqFiles);
+    blocking = deletedAbs(isBlocking);
 
     if ~isempty(blocking)
         out = cs_status(name, "fail", "Deleted candidates are still transitively required.", struct('blockingFiles', blocking));
