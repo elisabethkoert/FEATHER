@@ -1,4 +1,6 @@
 function [ok, msg] = compareGoldenOutputs(summary, cfg)
+% Compares selected smoke-summary fields against the stored golden baseline.
+% Returns ok=false with a concise message at the first mismatch.
 ok = true;
 msg = "Golden comparison passed.";
 
@@ -32,6 +34,7 @@ end
 end
 
 function txt = cs_value_to_text(v)
+% Converts values to readable text for mismatch messages.
 if isstring(v) || ischar(v)
     txt = string(v);
 elseif isnumeric(v) || islogical(v)

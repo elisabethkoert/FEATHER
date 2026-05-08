@@ -1,4 +1,7 @@
 function reqFiles = cs_required_files_to_strings(req)
+% Normalizes required-files output into a unique string array of file paths.
+% requiredFilesAndProducts may return different shapes, so this helper
+% keeps dependency-guard comparisons simple and consistent.
 if isempty(req)
     reqFiles = strings(1,0);
     return
