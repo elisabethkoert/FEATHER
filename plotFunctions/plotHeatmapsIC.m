@@ -500,7 +500,7 @@ elseif strcmp(mode,'eSR_contour_logScale')
     colormap(parula())
     caxisLimits = [0, ceil(max(max(SR)))]; % Example limits
     colorbar()
-    title(fig.Children(1),['eSR [Hz]'  ])
+    title(fig.Children(1),['ER [Hz]'  ])
 
     if exist('clim')
         clim(caxisLimits)
