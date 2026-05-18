@@ -1,6 +1,6 @@
 # `histimg` – Histology Image Object
 
-A `histimg` object stores quantification results from one histology image stack, typically a single cochlear region that was analysed using the Arivis-based analysis pipeline **Nintendo** first described in Thirumalai _et al._ 2025 (doi:10.7150/thno.104474). The pipeline handles images obtained with a confocal microscope with a 40× oil-immersion objective from slices stained against parvalbumin as a neuronal context marker and GFP as a marker for an introduced transgene. It uses Cellpose to detect cells and overlays the GFP channels with the segmented cells to obtain a transduction rate. The analyisis produces an output .csv file with all important values. In theory, parsing output files from other analysis pipelines into the same type of .csv files could also be used as an intersection with feather.
+A `histimg` object stores quantification results from one histology image stack, typically a single cochlear region that was analysed using the Arivis-based analysis pipeline **Nintendo** first described in Thirumalai _et al._ 2025 (doi:10.7150/thno.104474). The pipeline handles images obtained with a confocal microscope with a 40× oil-immersion objective from slices stained against parvalbumin as a neuronal context marker and GFP as a marker for an introduced transgene. It uses Cellpose to detect cells and overlays the GFP channels with the segmented cells to obtain a transduction rate. The analysis produces an output `.csv` file with all important values. In theory, parsing output files from other analysis pipelines into the same type of `.csv` files could also be used as an interface with FEATHER.
 
 ## Raw Data
 
@@ -87,5 +87,5 @@ Examples:
 | `volume` | µm³ | 3-D ROI volume (automatic detection) |
 | `density` | SGNs / 10⁵ µm³ | SGN density from automatic volume |
 | `transductionRate` | fraction 0–1 | `nPosCells / nCells` |
-| `areaSlice` | µm^2 | 2-D ROI volume from a center slice |
+| `areaSlice` | µm² | 2-D ROI area from a center slice |
 | `density2D` | SGNs / 10³ µm² | 2-D density derived from a center slice of the stack |

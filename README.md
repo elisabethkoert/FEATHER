@@ -96,7 +96,7 @@ As basic infrastructure, FEATHER needs three path settings in the MATLAB session
 
 For a given experiment, FEATHER resolves the processed experiment folder as:
 
-`<processedDataMap>/<processedDataDirPath>/<userID>data/<ExperimenterID>/f_<ExpID>`
+`<processedDataMap>/<processedDataDirPath>/<userID>/data/<ExperimenterID>/f_<ExpID>`
 
 and raw-data lookups are resolved from:
 

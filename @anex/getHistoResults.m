@@ -76,7 +76,7 @@ function [HistoRes] = getHistoResults(ee)
                                     all_areaSlice(kk)=NaN;
                                 end
 
-                                % 2D based on division by numebr of planes
+                                % 2D based on division by number of planes
                                 if ~isempty(histImg.numPlanesVolume) 
                                     all_density2D(kk)=histImg.density2D;
                                     all_numPlanesVolume(kk)=histImg.numPlanesVolume;
