@@ -1,62 +1,71 @@
 # FEATHER
 FEATHER: a Framework for Experimental Analysis of Tissue and Electrophysiology for Heterogeneous Experiments and Researchers
 
-This project is a toolbox developed for the institute for auditory neuroscience to process the various types of data generated in connection to an animal experiment in the institute from *in-vivo* electrophysiology recordings to results from immunohistochemical analysis of tissue.
+This project is a MATLAB toolbox developed in the Institute for Auditory Neuroscience to process the various types of data generated in connection to an animal experiment in the institute from *in-vivo* electrophysiology recordings to results from immunohistochemical analysis of cochlea tissue. The current version only works with the institute specific data types, but future releases should try to include more open source and standardized data formats.
 
 ## Authors
-Tht toolbox framework was set up by Anna Vavakou. Elisabeth Koert and Niels Albrecht joined as developers. Elisabeth Koert created this public version from the institues private code in connection to the publication XXX.
+The toolbox framework was set up by Anna Vavakou. Elisabeth Koert and Niels Albrecht joined as developers. Elisabeth Koert created this public version from the institues private code.
 
 # Affiliation
 Institute for Auditory Neuroscience  
 University Medical Center Goettingen <br>
-Robert-Koch_Str. 40<br>
+Robert-Koch-Str. 40<br>
 37075 Goettingen<br>
 Germany
 
 ---
 
 # Toolbox Overview
+FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment.
 
-FEATHER is organized around a few core object types that cover the full workflow from experiment organization to signal and tissue analysis.
-
-## Core Objects
-
-### `anex` (experiment-level object)
+### `anex` (animal-experiment object)
 `anex` is the central container for one animal experiment.  
 It links metadata (experiment ID, species, experimenter/user) with raw and processed data directories, and gives an overview of which recordings and analyses are available for that experiment.
 
 At this level, FEATHER enables:
 - organizing and loading experiment data consistently,
-- listing available ABR, IC, SU, and histology datasets,
-- launching standard experiment-wide analyses (e.g., thresholds, dynamic range, overview metrics).
+- listing available ABR, IC, and histology datasets,
+- launching standard experiment-wide analyses (e.g., threshold determination across all IC or ABR recordings, summarizing histology results from all image sets).
 
-### `berabr` (ABR-level object)
-`berabr` represents one ABR measurement series recorded with the BERA setup.  
-It stores raw traces, processed FEATHER traces, stimulus information, and optional calibration information.
+## Objects that can be associated to an anex
+
+### `berabr` (Auditory Brainstem Response object)
+`berabr` represents one auditory brainstem response (ABR) measurement recorded with the BERA custom MATLAB software used in the IAN. 
+It stores raw traces, processed FEATHER traces, stimulus information, the raw data directory, and optional calibration information.
 
 At this level, FEATHER enables:
-- ABR preprocessing and quality handling,
+- ABR preprocessing, and quality handling,
 - threshold extraction and waveform-based metrics,
 - ABR-specific plotting and calibration-aware interpretation.
 
-### `icme` (IC multielectrode recording object)
-`icme` represents one inferior-colliculus multielectrode recording session.  
-It combines recording metadata, stimulus definitions, spike lists, calibration, and downstream analysis results.
+### associated GUIs for manual user input
+`exploreBerabr.mlapp` together with `berabrWaveGUI2.mlapp` allow for the manual inspection of all berabr traces associated to an anex and to detect and store the peaks for the different stimuli and recordings.
+
+`userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is neccessary for correctly reading in calibration files.
+
+### `icme` (inferior colliculus multielectrode recording object)
+`icme` represents one inferior-colliculus multielectrode recording.  
+It contains recording metadata, stimulus definitions and calibration values, the raw data directory, and contains the spike-list with multi-unit activity extracted from the raw data necessary for downstream analysis results.
 
 At this level, FEATHER enables:
 - extraction/import of multi-unit spike data,
-- response analysis (spike rate, evoked rate, PSTH, d-prime, vector strength),
-- spatial/functional analyses (spread of excitation, tonotopy),
-- generation of standard IC visualizations (heatmaps, raster/PSTH-style views).
+- response analysis (spike rate, PSTH, d-prime, temporal precision, spread of excitation, tonotopy),
+- generation of standard IC visualizations for individual recordings (heatmaps, raster-plot, PSTH).
+
+### associated GUIs for manual user input
+`ICuserInput.mlapp` requests user input on the used hardware and optical density filters, recording quality as well as stimulation positions within the cochlea used for each icme associated to an anex.  
+
+
 
 ### `histimg` (histology image object)
-`histimg` represents one histology image set (typically one cochlear region / turn).  
-It stores image metadata and quantified outputs from the Nintendo histology analysis pipeline (internal SGN quantification workflow), such as cell counts, volumes, densities, and transduction rates.
+`histimg` represents the results obtained from one histology image set (typically one cochlear region / turn).  
+It stores image metadata and loads quantified outputs (such as cell counts, volumes, densities, and transduction rate) from our custom made, Arivis based histology analysis pipeline that runs on confocal cochlea images (described in Thirumalai _et al._ 2025 doi:10.7150/thno.104474).
 
 At this level, FEATHER enables:
-- importing standardized histology quantification results,
-- comparing density/transduction metrics across turns/sides/experiments,
-- integrating histology results with electrophysiology outcomes via the shared `anex` structure.
+- importing histology quantification results from standardized .csv sheets
+
+### associated GUIs for manual user input
+`chooseHistImgToUse.mlapp` requests user input to define which histimg should be used when analysing across the full anex in case multiple images have been obtained from the same region.  
 
 ## Surrounding Utility Modules
 
@@ -68,7 +77,7 @@ Helper functions for:
 - safety checks to avoid writing into raw/archive domains.
 
 ### `plotFunctions`
-Reusable plotting helpers used across ABR, IC, and summary analyses to create publication-style figures and standardized visualization outputs.
+Reusable plotting helpers used across ABR, IC, and summary analyses to create for quickly visualizing results.
 
 ### `multipleAnexFunctions`
-Cross-experiment helper functions for population-level analyses (for example, pooled PSTH-style analyses across multiple `anex` objects).
+Cross-experiment helper functions for pooling results from multiple animals (for example, pooled PSTH-style analyses across multiple `anex` objects).
