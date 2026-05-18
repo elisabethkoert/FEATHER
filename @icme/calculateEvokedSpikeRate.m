@@ -1,7 +1,6 @@
 function [all_evoked_spike_rate] = calculateEvokedSpikeRate(obj,stim_criteria_array, t_start,t_stop )
 % icme\calculateEvokedSpikeRate calculates evoked spike rate [Hz]
-% for all stimuli defined in stim_criteria_array by subtracting the spike rate in the
-% time window before the trigger
+% for all stimuli defined in stim_criteria_array by subtracting baseline spike rate before trigger from the the response spike rate in [t_start,t_stop]
 % input:
 %   obj (icme)
 %   stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [column in stimlist, min value, max value]
