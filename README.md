@@ -51,7 +51,7 @@ At this level, FEATHER enables:
 
 ### `histimg` (histology image object)
 `histimg` represents one histology image set (typically one cochlear region / turn).  
-It stores image metadata and quantified Nintendo analysis outputs such as cell counts, volumes, densities, and transduction rates.
+It stores image metadata and quantified outputs from the Nintendo histology analysis pipeline (internal SGN quantification workflow), such as cell counts, volumes, densities, and transduction rates.
 
 At this level, FEATHER enables:
 - importing standardized histology quantification results,
