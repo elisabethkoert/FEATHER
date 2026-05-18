@@ -44,8 +44,13 @@ At this level, FEATHER enables:
 `userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is necessary for correctly reading in calibration files.
 
 ### `icme` (inferior colliculus multielectrode recording object)
-`icme` represents one inferior-colliculus multielectrode recording. It currently handles data recorded using a 32 channel-NeuroNexus probe and Cheetah recording software. Stimuli are generated with the custom MATLAB software ExpControl used at the IAN.
-It contains recording metadata, stimulus definitions and calibration values, the raw data directory, and contains the spike-list with multi-unit activity extracted from the raw data necessary for downstream analysis results.
+`icme` represents one inferior-colliculus multielectrode recording.
+It currently handles data recorded using a 32 channel-NeuroNexus probe
+and Cheetah recording software.
+Stimuli are generated with the custom MATLAB software ExpControl used at the IAN.
+It contains recording metadata, stimulus definitions and calibration values,
+the raw data directory, and the spike-list with multi-unit activity extracted
+from raw data for downstream analysis.
 
 At this level, FEATHER enables:
 - extraction/import of multi-unit spike data,
