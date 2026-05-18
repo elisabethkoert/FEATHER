@@ -133,14 +133,12 @@ It saves `ICUserInput_<ExpID>.mat` to `processedDataDir/ICME/` and records for e
 | 4 | `ExtractMUAfromRawDataIntoSL` | Reads `.ncs` / `.nev` files, detects MU spikes, fills `icme.SL`, and optionally saves a spike-list `.txt` export |
 | 5 | `saveIcme` | Saves icme to `processedDataDir/ICME/IC/IC_<ExpID>_<SeriesID>.mat` |
 | 6 | `calculateSpikeRate` | Calculates mean spike rate and per-repetition spike rate in a chosen response window |
-| 7 | `calculateEvokedSpikeRate` | Calculates evoked spike rate (response window minus baseline window) for selected stimuli |
-| 8 | `calculateDprimeMultipleStimVars` | Calculates d' across stimuli (baseline or increasing-level mode), commonly used for threshold analyses |
-| 9 | `getResponsiveUnits` | Returns electrodes with significant responsiveness based on d' (`> 1`) |
+| 7 | `calculateDprimeMultipleStimVars` | Calculates d' across stimuli (baseline or increasing-level mode), commonly used for threshold analyses |
+| 8 | `getResponsiveUnits` | Returns electrodes with significant responsiveness based on d' (`> 1`) |
+| 9 | `calculateSOEContourlinesMultipleStimVars` | Calculates the spread of excitation based on the heatmap contourlines with different methods |
 | 10 | `calculatePSTH` | Calculates PSTH and response timing metrics (onset, offset, peak response time) |
-| 11 | `calculateVS` | Calculates vector strength and phase locking significance for repetitive stimulation |
-| 12 | `runRepRateAnalysis` | Aggregates repetitive-stimulation metrics (spike rate, spikes/stimulus, VS, cutoff frequency) for selected electrodes |
-| 13 | `plotHeatmapsIC` | Generates common IC heatmaps used in manuscript-style analyses (SR, d', multi-variable variants) |
-
+| 11 | `calculateVS` | Calculates vector strength and phase locking significance for trains of stimuli |
+| ... | | more functions can be found by calling `methods icme` |
 
 
 
