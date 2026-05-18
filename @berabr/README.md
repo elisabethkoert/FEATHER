@@ -117,5 +117,5 @@ For **acoustic** ABRs no calibration file is required; `C.Ical` is set equal to 
 | 2 | `processBerabr` | Bandpass-filters traces (default 300–3000 Hz), stores result in `berabr.F` |
 | 3 | `setCalibrationBeraFromLaserControl(ee)` | Reads LaserControl `.txt` files and populates `berabr.C.Ical` |
 | 4 | `exploreBerabr` / `berabrWaveGUI2` | GUI for manual wave-peak annotation (stored as `W_<ExpID>_<SeriesID>.mat` in the processed data directory) |
-| 5 | `userberabrOD(ee)` | GUI for adding ABR related user Input such as which density filter and specific laser was used for different berabrs |
+| 5 | `userberabrOD(ee)` | GUI for adding ABR-related user input, such as which density filter and specific laser were used for different berabrs |
 ---
