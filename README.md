@@ -41,7 +41,7 @@ At this level, FEATHER enables:
 ### associated GUIs for manual user input
 `exploreBerabr.mlapp` together with `berabrWaveGUI2.mlapp` allow for the manual inspection of all berabr traces associated to an anex and to detect and store the peaks for the different stimuli and recordings.
 
-`userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is neccessary for correctly reading in calibration files.
+`userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is necessary for correctly reading in calibration files.
 
 ### `icme` (inferior colliculus multielectrode recording object)
 `icme` represents one inferior-colliculus multielectrode recording. Currently it is able to handle data that was recorded using a 32 channel-Neuronexus probe and the Cheetah recording software together with the custom written MATLAB software ExpControl for stimulus creation that is used in the IAN. 
@@ -100,7 +100,7 @@ and raw-data lookups are resolved from:
 When an `anex` is initialized, FEATHER creates the processed data folder for this animal experiment and stores the `anex` object there as:
 - `E_<ExpID>.mat`
   
-For adding analysis specific comments a KIWI file can be created using `initKiwi(anex)` that serves as a notepad.
+For adding analysis-specific comments a KIWI file can be created using `initKiwi(anex)` that serves as a notepad.
 
 As additional objects are created/processed, files are stored in a consistent structure:
 
