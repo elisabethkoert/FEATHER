@@ -142,7 +142,7 @@ classdef histimg
                 obj.areaSlice       =NaN;
             end
 
-            if any("numPlanesVolume" == string(data.Properties.VariableNames)) && any("Volume_ROI_microm3_" == string(data.Properties.VariableNames))
+            if any("numPlanesVolume" == string(data.Properties.VariableNames))
                 obj.numPlanesVolume   = data.numPlanesVolume;
                 % devide volume in µm3 by num of planes (each 1 µm thick)
                 % for 2D area in µm2, gives density in SGNs/1000µm2
