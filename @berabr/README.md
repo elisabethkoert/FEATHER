@@ -33,7 +33,7 @@ Each element of `IsData` must contain at minimum:
 | `BERAStimMode` | Stimulus mode string used to fill `berabr.Stim.mode` |
 | `dbSPL` / `Intens1` | Presented intensity (acoustic: `dbSPL`; optical/electric: `Intens1`) |
 | `StimRepeatPerSec` | Stimulus repetition rate [Hz] |
-| `BERAdat` | Averaged ABR waveform data (or `BERAdatTrace` + `BERAdatTraceStim` for `AverageMode == 2`) |
+| `BERAdat` | Averaged ABR waveform data (usually over 1000 repetitions of a stimulus) (or `BERAdatTrace` + `BERAdatTraceStim` for `AverageMode == 2`) |
 | `StimDat` | Stimulus trace |
 | `AverageMode` | `1` = averaged in-window; `2` = continuous cut |
 
@@ -105,7 +105,7 @@ This saves `ODui_<ExpID>.mat` in the processed data directory, recording which *
 | `C.Ical` | Calibrated intensity [mW] for each trace in the berabr |
 | `C.calibTag` | OD filter value used |
 
-For **acoustic** ABRs no calibration file is required; `C.Ical` is set equal to the software output in dB SPL.
+For **acoustic** ABRs no calibration file is required; `C.Ical` is set equal to the software output in dB SPL, since there the stimulating software gives out already calibrated values for our setups.
 
 ---
 
@@ -117,15 +117,5 @@ For **acoustic** ABRs no calibration file is required; `C.Ical` is set equal to 
 | 2 | `processBerabr` | Bandpass-filters traces (default 300–3000 Hz), stores result in `berabr.F` |
 | 3 | `setCalibrationBeraFromLaserControl(ee)` | Reads LaserControl `.txt` files and populates `berabr.C.Ical` |
 | 4 | `exploreBerabr` / `berabrWaveGUI2` | GUI for manual wave-peak annotation (stored as `W_<ExpID>_<SeriesID>.mat` in the processed data directory) |
-| 5 | `intensityThreshold` | Derives ABR threshold from the lowest intensity with a wave-1 annotation |
-
+| 5 | `userberabrOD(ee)` | GUI for adding ABR related user Input such as which density filter and specific laser was used for different berabrs |
 ---
-
-## Processed Data Files
-
-| File | Location | Description |
-|------|----------|-------------|
-| `B_<ExpID>_<SeriesID>.mat` | `processedDataDir/` | Saved `berabr` object (raw data field `R` is emptied before saving) |
-| `W_<ExpID>_<SeriesID>.mat` | `processedDataDir/` | Wave-peak annotations from GUI |
-| `List_ABR.mat` | `processedDataDir/` | Cached list of all processed berabr objects |
-| `List_ABR_raw.mat` | `processedDataDir/` | Cached list of all raw ABR series IDs |
