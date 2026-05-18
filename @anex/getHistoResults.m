@@ -67,8 +67,7 @@ function [HistoRes] = getHistoResults(ee)
                                 all_nCells(kk)=histImg.nCells;
                                 
                                 all_ImageSeriesID{kk}=histImg.SeriesID;
-                                % 2D based on extracting cell count and
-                                % area from a single slice
+                                % 2D based on extracting cell count and area from a single slice
                                 if ~isnan(histImg.density2Dslice)
                                     all_density2Dslice(kk)=histImg.density2Dslice;
                                     all_areaSlice(kk)=histImg.areaSlice;
