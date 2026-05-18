@@ -2,7 +2,7 @@ function [P1N1MaxAmplitude,P1Latency,indexBeraTrace] = findMaxWave(B)
 % berabr\findMaxWave finds the max Intensity with a user annotation and
 % returns the P1N1 amplitude and P1 latency
 % input: 
-%   B (berabr): berabr object form which to get the strongest wave response
+%   B (berabr): berabr object from which to get the strongest wave response
 % output:
 %   P1N1MaxAmplitude (float): largest P1N1 amplitude of this recording
 %   P1Latency (float): latency of the highest amplitude P1
@@ -16,7 +16,7 @@ if isempty(W)
     indexBeraTrace =nan;
     return
 end
-% calcualte the P1N1 amplitude for all waves:
+% calculate the P1N1 amplitude for all waves:
 all_P1N1Ampl=[];
 all_P1Latencies=[];
 for jj=1:length(W)

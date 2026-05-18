@@ -1,12 +1,12 @@
 function [PSTH_norm,PSTH,bin_centers,resp_idx, t_onset,t_offset,peak_response_time] = calculatePSTH(IC_list,stim_criteria_array,elecs,plot_bool,artefact_removal,stimdur_ix,t_start,t_stop,PSTH_binsize,normalize_plot )
-% icme\PSTH calcualtes (and plots) the PeriStimulusTimeHistogram and its on/off kinetics
-% This script creates the PSTH for one icme for all stimuli with the gicen set of stimuli criteria  in the given time
+% icme\calculatePSTH calculates (and plots) the PeriStimulusTimeHistogram and its on/off kinetics
+% This script creates the PSTH for one icme for all stimuli matching the given stimulus criteria in the given time
 % window tstart-tstop and it calculates the response onset and offset (t_onset, t_offset) 
 % from the normalized histogram as the timepoint when the
 % spikerate is more than 3x std of the baseline mean 
 % (baseline currently calculated form the last 10 ms of the stimulation
 % window). The offset has to be at least 2 ms after the onset to avoid
-% detecting noise in the stimulus osnet.
+% detecting noise in the stimulus onset.
 %
 % output
 %   PSTH_norm: (1xn double) normalized PSTH of the detected spikes
@@ -19,7 +19,7 @@ function [PSTH_norm,PSTH,bin_centers,resp_idx, t_onset,t_offset,peak_response_ti
 %
 % input:
 %   	IC_list: icme/list of ICMEs
-%   stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [collum in stimlist, min value, max value]
+%   stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [column in stimlist, min value, max value]
 %      exp. [1,500,32000;4,50,90] a pure tone btw 500 and 32000 Hz with 50-90 dB
 %      exp.  [1,5,60;3,1,1] a pulse btw 5 and 60 mW with a duration of 1 ms
 %   elecs: list[int] which electrodes the spikes should be taken from, if
@@ -29,7 +29,7 @@ function [PSTH_norm,PSTH,bin_centers,resp_idx, t_onset,t_offset,peak_response_ti
 %   stimdur_ix: int of where in stimlist the whole stimulus duration is found (needed for artefact removal) and plotting
 %   t_start: float/int start timepoint for histogram bins and also response time analysis
 %   t_stop: float/int end of histogram bins/ analysis of spikerate
-%   PSTH_binszize: float binsize in ms
+%   PSTH_binsize: float bin size in ms
 %   normalize_plot: bool if plot shows normalized count or real count
 
 

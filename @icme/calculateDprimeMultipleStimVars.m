@@ -1,23 +1,23 @@
 function [all_d_prime_results] = calculateDprimeMultipleStimVars(obj ,mode,stim_criteria_array,t_start,t_stop)
-% icme\calculateDprimeMultipleStimVars calculates d' values  after separating the whole stimulus into subgroups (eg. frequnecies for tonotopy recordings)
+% icme\calculateDprimeMultipleStimVars calculates d' values after separating stimuli into subgroups (e.g., frequencies for tonotopy recordings)
 % dPrime calculation happens by comparing spike rate distributions either between consecutive stimuli (mode=increasingLvl) or with a
 % baseline (mode=baseline) taken from timewindow before trigger, same length as stimulus but max 50 ms 
 %
 % input:
 %   obj (icme) IC recording object, 
-%   mode (str) eihter increasingLvl or baseline
-%   stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [collum in stimlist, min value, max value]
+%   mode (str) either increasingLvl or baseline
+%   stim_criteria_array: (nx3 array floats) helper to identify wanted stimuli [column in stimlist, min value, max value]
 %      the x axis/sorted parameter for increasinglvl will be the property described in the first row
 %       the fixed stimulus will be the property described in the second row     
 %        exp. [4,50,90;1,500,32000] analyses the d' value for stimuli of
 %       increasing SPL (50-90 dB) and analyses their d' value separated by
 %       frequencies
 %   t_start (double) start of timewindow in which to extract the spike rate
-%   t_stop (double) stop of time window in which to analysie the spike rate
+%   t_stop (double) stop of time window in which to analyze the spike rate
 % output in d_prime_results object:
-%   mode (str) eihter increasingLvl or baseline
+%   mode (str) either increasingLvl or baseline
 %   t_start (double) start of timewindow in which to extract the spike rate
-%   t_stop (double) stop of time window in which to analysie the spike rate  
+%   t_stop (double) stop of time window in which to analyze the spike rate
 %   intensities=sortLvl; % changing values (eg intensity in mW) that were compared to each other in the d' analysis
 %   fixed_var_header (string): stimulus variable that was fixed eg.
 %           frequency
@@ -26,9 +26,9 @@ function [all_d_prime_results] = calculateDprimeMultipleStimVars(obj ,mode,stim_
 %           during the analysis (eg. SPL, laserPower)
 %  changing_var_values (1xm double) eg. used intensities during
 %           stimulation
-%   all_Dprime_array (32 x m for vaseline 32xm-1 for increasing lvl):
-%       dPrime values fro each stimulus and electrode
-%   all_Dprime_cumsum(32 x m for vaseline 32xm-1 for increasing lvl):
+%   all_Dprime_array (32 x m for baseline, 32 x (m-1) for increasingLvl):
+%       dPrime values for each stimulus and electrode
+%   all_Dprime_cumsum (32 x m for baseline, 32 x (m-1) for increasingLvl):
 %       cumulative sum of all_Dprime_array for each electrode
 %    analysed_d_prime_array (1x k) % investigated d' values for
 %       threshold determination

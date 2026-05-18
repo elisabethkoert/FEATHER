@@ -41,11 +41,16 @@ At this level, FEATHER enables:
 ### associated GUIs for manual user input
 `exploreBerabr.mlapp` together with `berabrWaveGUI2.mlapp` allow for the manual inspection of all berabr traces associated to an anex and to detect and store the peaks for the different stimuli and recordings.
 
-`userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is neccessary for correctly reading in calibration files.
+`userberabrOD.mlapp` requests user input on the used hardware and optical density filters used for each berabr associated to an anex which is necessary for correctly reading in calibration files.
 
 ### `icme` (inferior colliculus multielectrode recording object)
-`icme` represents one inferior-colliculus multielectrode recording.  
-It contains recording metadata, stimulus definitions and calibration values, the raw data directory, and contains the spike-list with multi-unit activity extracted from the raw data necessary for downstream analysis results.
+`icme` represents one inferior-colliculus multielectrode recording.
+It currently handles data recorded using a 32 channel-NeuroNexus probe
+and Cheetah recording software.
+Stimuli are generated with the custom MATLAB software ExpControl used at the IAN.
+It contains recording metadata, stimulus definitions and calibration values,
+the raw data directory, and the spike-list with multi-unit activity extracted
+from raw data for downstream analysis.
 
 At this level, FEATHER enables:
 - extraction/import of multi-unit spike data,
@@ -81,3 +86,61 @@ Reusable plotting helpers used across ABR, IC, and summary analyses to create fo
 
 ### `multipleAnexFunctions`
 Cross-experiment helper functions for pooling results from multiple animals (for example, pooled PSTH-style analyses across multiple `anex` objects).
+
+## Directory Management and Processed Data Layout
+
+As basic infrastructure, FEATHER needs three path settings in the MATLAB session (example initialization shown in the testingScripts):
+- **Raw data map/drive** via `ukonmap` (base mapping used for raw directories).
+- **Processed data map/drive** via `processedDataMap`.
+- **Processed data base directory** via `processedDataDirPath`.
+
+For a given experiment, FEATHER resolves the processed experiment folder as:
+
+`<processedDataMap>/<processedDataDirPath>/<userID>/data/<ExperimenterID>/f_<ExpID>`
+
+and raw-data lookups are resolved from:
+
+`<ukonmap>/<rawDataDir segments...>`
+
+When an `anex` is initialized, FEATHER creates the processed data folder for this animal experiment and stores the `anex` object there as:
+- `E_<ExpID>.mat`
+  
+For adding analysis-specific comments a KIWI file can be created using `initKiwi(anex)` that serves as a notepad.
+
+As additional objects are created/processed, files are stored in a consistent structure:
+
+```text
+f_<ExpID>/
+  E_<ExpID>.mat                     # anex object (experiment-level container)
+  <ExpID>_kiwi.m                    # notepad file
+
+  B_<ExpID>_<SeriesID>.mat          # berabr objects (ABR)
+  W_<ExpID>_<SeriesID>.mat          # detected waves/ peaks for the berabr object
+  List_ABR_raw.mat                  # cached ABR raw list
+  List_ABR.mat                      # cached ABR processed list
+  ODui_<ExpID>.mat                  # user input table with all berabr associated info
+  *.mat                             # additional anex wide ABR analysis results (eg. thresholds)
+
+  List_IC_raw.mat                   # cached IC raw list
+  List_IC.mat                       # cached IC processed list
+  *.mat                             # additional anex wide IC analysis results  (eg. thresholds)
+
+
+
+  HISTO/
+    H_<ExpID>_<SeriesID>.mat        # histimg objects
+    List_Hist_raw.mat               # cached histology raw list
+    List_Hist.mat                   # cached histology processed list
+    HistoRes.mat                    # anex wide summary of the histology results across all cochlea turns
+    HistoUserInput_<ExpID>.mat      # user input table with all histimg associated info
+
+  ICME/
+    IC/
+      IC_<ExpID>_<SeriesID>.mat     # icme objects
+    RESORT/
+      <ExpID>_<SeriesID>_Resort.txt # files containing the metadata, analysis parameters and extracted multiunit activity as the spike-list in a more standardized and easy read in format (if generated)
+    SR/
+      SR_<ExpID>_<SeriesID>_<t_start>_<t_stop>.mat    # calculated spike rates in specific time windows that can be loaded to avoid recalculating every time (if generated)
+  ICUserInput_<ExpID>.mat           # user input table with all icme associated info
+  <SeriesID>_tonotopy_res_*.mat     # tonotopy results for acoustic recordings with different analysis methods indicated at the *
+```

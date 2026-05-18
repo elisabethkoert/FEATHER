@@ -1,7 +1,7 @@
 function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_respUnits,cutoff_fqs,all_phases] = runRepRateAnalysis(obj,stim_criteria_array,t_start,t_stop,elecs)
-% icme\runRepRatobjeAnalysis calcualtes typical values for a protocol with repetitive stimulus presentation
-% Thiss function calculates the spikeRate, number of spieks per stimulus, VS, phase and cutoff frequency 
-% for a protocol with repetitive stimulus presentation for a subset of electrodes in a IC multiunit recording
+% icme\runRepRateAnalysis calculates common metrics for pulse train protocols
+% This function calculates spike rate, number of spikes per stimulus, VS, phase, and cutoff frequency
+% for a protocol with trains of stimuli presented with different stimulation rates for a subset of electrodes in a IC multiunit recording
 %
 % input:
 %   obj (icme) IC recording object, 
@@ -9,20 +9,20 @@ function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_re
 %     [collum in stimlist, min value, max value]
 %     first row should describe the stimulation rate
 %   t_start (double [ms]) start of timewindow in which to extract the spike rate
-%   t_stop (double [ms]) stop of time window in which to analysie
+%   t_stop (double [ms]) stop of time window in which to analyse
 %   elecs (nx1 double) list of electrode IDs to use [1:1:32]
 % output
 %   rates (n_ratesx1) investigated rates
 %   meanSpikeRates_respUnits (n_elecs x n_rates double) mean spike rate
-%   during whole stimulation timewindow [Hz]
+%       during whole stimulation timewindow [Hz]
 %   SpikesPerStimulus_respUnits (n_elecs x n_rates double) number of spikes
-%   divided by numebr of presented stimuli in whole timewindow
-%   VS_array (n_elecs x n_rates double) caclulated VS, set to 0 if Rayleigh
-%       criterion is not fullfilled
+%       divided by number of presented stimuli in the whole time window
+%   VS_array (n_elecs x n_rates double) calculated VS, set to 0 if Rayleigh
+%       criterion is not fulfilled
 %   cutoff_fqs (1xn_elecs double) for each electrode/MU the lowest rate
 %       where the VS was 0 meaning the MUA was unable to follow the stimulus
 %       timing
-%   all_phases (struct) with fields elecX_00Hz with the spiketimes within a
+%   all_phases (struct) with fields elecX_00 with the spiketimes within a
 %       phase for each electrode and rate
  
   % % try if the calibrated Stimlist exists

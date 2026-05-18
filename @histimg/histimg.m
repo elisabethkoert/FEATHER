@@ -16,19 +16,13 @@ classdef histimg
         nPosCells double
         volume double % full 3D volume around all detected cells
         areaSlice double % area of the full volume intersected with a single center slice
-        volumeNintendoStyle double  % manually drawn volume of the full Rosenthal's canal based on the PV backgorund staining
-        areaSliceNintendoStyle double % area of self drawn RC at a single center slice
         density double % SGNs/10^5 µm3
         densityTransduced double % SGNs/10^5 µm3
-        densityNintendoStyle double % SGNs/10^5 µm3
-        densityTransducedNintendoStyle double % SGNs/10^5 µm3
         transductionRate double 
         gfpThreshhold double
         numPlanesVolume double % one plane is 1 µm thick
-        densityNintendoStyle2D double % SGNs/10^4 by division of Volume with num of planes
         density2D double % SGNs/10^4  by division of Volume with num of planes
         density2Dslice double % in SGNs/10^4   µm2 by separate readout from one slice in stack
-        densityNintendoStyle2Dslice double % in SGNs/10^4   µm2 by separate readout from one slice in stack
 
 
     end
@@ -140,15 +134,6 @@ classdef histimg
             else
                 obj.gfpThreshhold   = NaN;
             end
-            if any("Volume_ROI_Nintendo_Style_microm3_" == string(data.Properties.VariableNames))
-                obj.volumeNintendoStyle   = data.Volume_ROI_Nintendo_Style_microm3_;
-                obj.densityNintendoStyle             = (data.AllSGNs)/data.Volume_ROI_Nintendo_Style_microm3_*10^(5);
-                obj.densityTransducedNintendoStyle   =(data.No_Positive)/data.Volume_ROI_Nintendo_Style_microm3_*10^(5);
-            else
-                obj.volumeNintendoStyle   = NaN;
-                obj.densityNintendoStyle            = NaN;
-                obj.densityTransducedNintendoStyle   = NaN;
-            end
             if any("Volume_Slice_microm3_" == string(data.Properties.VariableNames))
                 obj.density2Dslice           = (data.AllSGNsSlice)/data.Volume_Slice_microm3_*10^(4); % slice is 1 µm thick to Volume in µm3 per slice is acutally area in µm2
                 obj.areaSlice               = data.Volume_Slice_microm3_;
@@ -157,23 +142,13 @@ classdef histimg
                 obj.areaSlice       =NaN;
             end
 
-            if any("Volume_Slice_Nintendo_Style_microm3_" == string(data.Properties.VariableNames))
-                obj.densityNintendoStyle2Dslice           = (data.AllSGNsSlice)/data.Volume_Slice_Nintendo_Style_microm3_*10^(4); % slice is 1 µm thick to Volume in µm3 per slice is acutally area in µm2
-                obj.areaSliceNintendoStyle               = data.Volume_Slice_Nintendo_Style_microm3_;
-            else
-                obj.densityNintendoStyle2Dslice   = NaN;
-                obj.areaSliceNintendoStyle        = NaN;
-            end
-           
-            if any("numPlanesVolume" == string(data.Properties.VariableNames)) && any("Volume_ROI_Nintendo_Style_microm3_" == string(data.Properties.VariableNames))
+            if any("numPlanesVolume" == string(data.Properties.VariableNames))
                 obj.numPlanesVolume   = data.numPlanesVolume;
                 % devide volume in µm3 by num of planes (each 1 µm thick)
                 % for 2D area in µm2, gives density in SGNs/1000µm2
-                obj.densityNintendoStyle2D=(data.AllSGNs)/(data.Volume_ROI_Nintendo_Style_microm3_/data.numPlanesVolume)*1000;
                 obj.density2D=(data.AllSGNs)/(data.Volume_ROI_microm3_/data.numPlanesVolume)*1000;
             else
                 obj.numPlanesVolume   =  NaN;
-                obj.densityNintendoStyle2D=NaN;
                 obj.density2D=NaN;
             end
 
