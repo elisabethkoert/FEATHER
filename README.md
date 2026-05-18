@@ -18,6 +18,49 @@ Germany
 # Toolbox Overview
 FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment.
 
+## Directory Management and Processed Data Layout
+
+As basic infrastructure, FEATHER needs three path settings in the MATLAB session:
+- **Raw data map/drive** via `ukonmap` (base mapping used for raw directories).
+- **Processed data map/drive** via `processedDataMap`.
+- **Processed data base directory** via `processedDataDirPath`.
+
+For a given experiment, FEATHER resolves the processed experiment folder as:
+
+`<processedDataMap>/<processedDataDirPath>/<userID>data/<ExperimenterID>/f_<ExpID>`
+
+and raw-data lookups are resolved from:
+
+`<ukonmap>/<rawDataDir segments...>`
+
+When an `anex` is initialized (`initProcessedExp`), FEATHER creates the processed experiment folder and stores the `anex` object there as:
+- `E_<ExpID>.mat`
+
+As additional objects are created/processed, files are stored in a consistent structure so a user can open one processed experiment folder and understand what each object is:
+
+```text
+f_<ExpID>/
+  E_<ExpID>.mat                     # anex object (experiment-level container)
+
+  B_<ExpID>_<SeriesID>.mat          # berabr objects (ABR)
+  List_ABR_raw.mat                  # cached ABR raw list
+  List_ABR.mat                      # cached ABR processed list
+
+  HISTO/
+    H_<ExpID>_<SeriesID>.mat        # histimg objects
+    List_Hist_raw.mat               # cached histology raw list
+    List_Hist.mat                   # cached histology processed list
+
+  ICME/
+    IC/
+      IC_<ExpID>_<SeriesID>.mat     # icme objects
+    RESORT/                         # spike-list CSV outputs (if generated)
+    SR/                             # spike-rate outputs (if generated)
+    *.mat                           # additional IC analysis outputs (e.g. tonotopy results)
+```
+
+`testSafeDir` also protects against writing FEATHER output into archive domains.
+
 ### `anex` (animal-experiment object)
 `anex` is the central container for one animal experiment.  
 It links metadata (experiment ID, species, experimenter/user) with raw and processed data directories, and gives an overview of which recordings and analyses are available for that experiment.
