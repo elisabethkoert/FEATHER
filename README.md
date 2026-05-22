@@ -4,7 +4,7 @@ FEATHER: a Framework for Experimental Analysis of Tissue and Electrophysiology f
 This project is a MATLAB toolbox developed in the Institute for Auditory Neuroscience to process the various types of data generated in connection to an animal experiment in the institute from *in-vivo* electrophysiology recordings to results from immunohistochemical analysis of cochlea tissue. The current version only works with the institute specific data types, but future releases should try to include more open source and standardized data formats.
 
 ## Authors
-The toolbox framework was set up by Anna Vavakou. Elisabeth Koert and Niels Albrecht joined as developers. Elisabeth Koert created this public version from the institues private code.
+The FEATHER framework was established and architected by Anna Vavakou. Elisabeth Koert and Niels Albrecht later joined as developers and contributed substantially to the continued development of the toolbox. Elisabeth Koert prepared this public release from the institute’s internal codebase. 
 
 # Affiliation
 Institute for Auditory Neuroscience  
@@ -16,7 +16,9 @@ Germany
 ---
 
 # Toolbox Overview
-FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment.
+FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment. FEATHER separates raw and processed data, preserving raw data integrity while persistently storing processed outputs to avoid recomputation. This enables reproducible and efficient workflows across multiple users. 
+
+## Objects
 
 ### `anex` (animal-experiment object)
 `anex` is the central container for one animal experiment.  
@@ -27,11 +29,9 @@ At this level, FEATHER enables:
 - listing available ABR, IC, and histology datasets,
 - launching standard experiment-wide analyses (e.g., threshold determination across all IC or ABR recordings, summarizing histology results from all image sets).
 
-## Objects that can be associated to an anex
-
 ### `berabr` (Auditory Brainstem Response object)
 `berabr` represents one auditory brainstem response (ABR) measurement recorded with the BERA custom MATLAB software used in the IAN. 
-It stores raw traces, processed FEATHER traces, stimulus information, the raw data directory, and optional calibration information.
+It stores raw traces, processed FEATHER traces, stimulus information, the raw data directory, and optional calibration information. Multiple `berabr`objects can be associated to one `anex`.
 
 At this level, FEATHER enables:
 - ABR preprocessing, and quality handling,
@@ -50,7 +50,7 @@ and Cheetah recording software.
 Stimuli are generated with the custom MATLAB software ExpControl used at the IAN.
 It contains recording metadata, stimulus definitions and calibration values,
 the raw data directory, and the spike-list with multi-unit activity extracted
-from raw data for downstream analysis.
+from raw data for downstream analysis. Multiple `icme`objects can be associated to one `anex`.
 
 At this level, FEATHER enables:
 - extraction/import of multi-unit spike data,
@@ -64,7 +64,7 @@ At this level, FEATHER enables:
 
 ### `histimg` (histology image object)
 `histimg` represents the results obtained from one histology image set (typically one cochlear region / turn).  
-It stores image metadata and loads quantified outputs (such as cell counts, volumes, densities, and transduction rate) from our custom made, Arivis based histology analysis pipeline that runs on confocal cochlea images (described in Thirumalai _et al._ 2025 doi:10.7150/thno.104474).
+It stores image metadata and loads quantified outputs (such as cell counts, volumes, densities, and transduction rate) from our custom made, Arivis based histology analysis pipeline that runs on confocal cochlea images (described in Thirumalai _et al._ 2025 doi:10.7150/thno.104474). Multiple `histimg`objects can be associated to one `anex`.
 
 At this level, FEATHER enables:
 - importing histology quantification results from standardized .csv sheets
@@ -90,13 +90,13 @@ Cross-experiment helper functions for pooling results from multiple animals (for
 ## Directory Management and Processed Data Layout
 
 As basic infrastructure, FEATHER needs three path settings in the MATLAB session (example initialization shown in the testingScripts):
-- **Raw data map/drive** via `ukonmap` (base mapping used for raw directories).
+- **Raw data map/drive** via `ukonmap`.
 - **Processed data map/drive** via `processedDataMap`.
 - **Processed data base directory** via `processedDataDirPath`.
 
-For a given experiment, FEATHER resolves the processed experiment folder as:
+For a given experiment, FEATHER resolves the processed experiment folder based on the **userID** of the person running the analysis and the **ExperimenterID** of the person performing the animal experiment and the **ExpID** as the identifier of this specific animal experiment (in the IAN `<species><ExperimenterID><AnimalID>` eg. mav123456):
 
-`<processedDataMap>/<processedDataDirPath>/<userID>/data/<ExperimenterID>/f_<ExpID>`
+`<processedDataMap>/<processedDataDirPath>/<userID>data/<ExperimenterID>/f_<ExpID>`
 
 and raw-data lookups are resolved from:
 
