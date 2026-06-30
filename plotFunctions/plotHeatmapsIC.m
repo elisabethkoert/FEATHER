@@ -116,16 +116,7 @@ elseif strcmp(mode,'dPrimeCum')
     set(gca,'XTick',x_values,'XTickLabel',x_values)
 elseif strcmp(mode,'dPrimeBase_contour')
     d_prime_results= calculateDprimeMultipleStimVars(IC,'baseline', stim_criteria_array,t_start,t_stop);
-    all_Dprimes= d_prime_results{1}.all_Dprime_array;
-    % exclude impossible stimuli from plotting
-    if isfield('impossibleStimuli',IC.C) % only works after calibration files have been checked in analysis
-        if ~isempty(IC.C.impossibleStimuli)
-            if IC.C.impossibleStimuli ~=1 % first one is not included anyway
-                x_values(IC.C.impossibleStimuli)=[];
-                all_Dprimes(:,IC.C.impossibleStimuli-1)=[];
-            end
-        end
-    end
+    all_Dprimes= d_prime_results{1}.all_Dprime_array;    
     % d' cumsum values plot
     analyzed_d_prime_array=[-1:0.5:ceil(max(max(all_Dprimes)))];
     fig = figure();
@@ -186,14 +177,16 @@ elseif strcmp(mode,'dPrimeBase_contour')
                 end
             end
         end
-    lg=legend(hs,'Location','northwest','TextColor','k');
+        if ~isempty(hs)
+            lg=legend(hs,'Location','northwest','TextColor','k');
+        end
    
     title(IC.SeriesID, 'Interpreter', 'none')
     xlabel(x_label)
     ylabel('electrode #')
     %make y-axis more sparse for readability
     set(gca,'YTick', [1,8,16,24,32], 'YtickLabel', [1,8,16,24,32],'YDir','reverse')
-    set(gca,'XTick',0:1:length(x_values),'XTickLabel',x_values)
+    set(gca,'XTick',1:1:length(x_values),'XTickLabel',x_values)
 elseif strcmp(mode,'dPrimeCum_contour')
     d_prime_results= calculateDprimeMultipleStimVars(IC,'increasingLvl', stim_criteria_array,t_start,t_stop);
     all_Dprimes_cumsum= d_prime_results{1}.all_Dprime_cumsum;
@@ -266,8 +259,9 @@ elseif strcmp(mode,'dPrimeCum_contour')
                 end
             end
         end
-    lg=legend(hs,'Location','northwest','TextColor','k');
-   
+        if ~isempty(hs)
+             lg=legend(hs,'Location','northwest','TextColor','k');
+        end
     title(IC.SeriesID, 'Interpreter', 'none')
     xlabel(x_label)
     ylabel('electrode #')
@@ -355,8 +349,9 @@ elseif strcmp(mode,'dPrimeCum_contour_logScale')
                 end
             end
         end
-    lg=legend(hs,'Location','northwest','TextColor','k');
-   
+    if ~isempty(hs)
+        lg=legend(hs,'Location','northwest','TextColor','k');
+    end
     title(IC.SeriesID, 'Interpreter', 'none')
     xlabel("stimulus dB rel. d'1 threshold")
     ylabel('electrode #')
@@ -514,8 +509,8 @@ elseif strcmp(mode,'eSR_contour_logScale')
     set(gca,'YTick', [1,8,16,24,32], 'YtickLabel', [1,8,16,24,32],'YDir','reverse')
 
 elseif strcmp(mode,'dPrimeBaseline')
-    d_prime_results= calculateDprime(IC,'baseline',stim_criteria_array, t_start,t_stop);
-    all_Dprime_array=d_prime_results.all_Dprime_array;
+    d_prime_results= calculateDprimeMultipleStimVars(IC,'baseline',stim_criteria_array, t_start,t_stop);
+    all_Dprime_array=d_prime_results{1}.all_Dprime_array;
     % d' cumsum values plot
     fig = nonuniformHM(x_values',(all_electrodes+1)',all_Dprime_array);
     title(fig.Children(1),['d' sprintf( '\''' ) ])

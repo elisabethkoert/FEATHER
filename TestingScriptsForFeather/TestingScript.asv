@@ -6,8 +6,8 @@
 clear all; close all; clear global;
 
 % toolbox filepath
-tb_path =  horzcat('C:\Users\Administrator\Desktop\GitFolders\FEATHER\invivoephysfeather'); % DS WS
-% tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\feather\invivoEphysFEATHER'; % EK office PC
+% tb_path =  horzcat('C:\Users\Administrator\Desktop\GitFolders\FEATHER\invivoephysfeather'); % DS WS
+tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\feather\invivoEphysFEATHER'; % EK office PC
 
 addpath(genpath(tb_path));
 
@@ -57,6 +57,7 @@ setCalibrationBeraFromLaserControl(ee)
 enablecache off % make sure you load raw data
 [ExpIntThrAcoustic] = intensityThreshold(ee, 'Acoustic')
 [ExpIntThrOptical] = intensityThreshold(ee, 'Optical')
+
 saveAnex(ee);%updates the ee
 
 % get the max P1N1 amplitude for a specific sitmulation type over all BERABRs
@@ -123,7 +124,7 @@ for ii = 1: numel(L.IC_SeriesID)
     saveIcme(IC);
 
 
-    %% extract the MU activity from the raw data 
+    %% extract the MU activity from the raw data, needs a WS 
    enablecache off
    IC = ExtractMUAfromRawDataIntoSL(IC);
    saveIcme(IC);

@@ -89,6 +89,10 @@ function all_SoE_results = calculateSOEContourlinesMultipleStimVars(obj, mode, s
  
      % load d prime results
     all_d_prime_results = calculateDprimeMultipleStimVars(obj,dPrime_mode,stim_criteria_array, t_start,t_stop);
+    if isempty(all_d_prime_results)
+        all_SoE_results={};
+        return
+    end
     % load spike rate results
     [all_evoked_spike_rate] = calculateEvokedSpikeRate(obj,stim_criteria_array, t_start,t_stop );
     if ~numel(all_d_prime_results)==numel(all_evoked_spike_rate)
