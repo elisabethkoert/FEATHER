@@ -135,8 +135,13 @@ classdef histimg
                 obj.gfpThreshhold   = NaN;
             end
             if any("Volume_Slice_microm3_" == string(data.Properties.VariableNames))
-                obj.density2Dslice           = (data.AllSGNsSlice)/data.Volume_Slice_microm3_*10^(4); % slice is 1 µm thick to Volume in µm3 per slice is acutally area in µm2
-                obj.areaSlice               = data.Volume_Slice_microm3_;
+                % get the z slice thickness if available, default is 1
+                px_z=1;
+                if any("px_z" == string(data.Properties.VariableNames))
+                    px_z=data.px_z;
+                end
+                obj.areaSlice               = data.Volume_Slice_microm3_/px_z;
+                obj.density2Dslice           = (data.AllSGNsSlice)/obj.areaSlice*10^(4);
             else
                 obj.density2Dslice   = NaN;
                 obj.areaSlice       =NaN;
