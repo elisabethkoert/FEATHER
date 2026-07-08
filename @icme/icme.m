@@ -70,9 +70,19 @@ classdef icme
             % information and stores it in obj.Stim
 
             load_name = strcat(obj.SeriesID,".m");
-            run(fullfile(gen_dir_name(obj.D.dir),load_name));%loaded object
-            obj.ExpInfo = ans; % this is the expConttrol .m file, gav147290_0001
-
+            fpath = fullfile(gen_dir_name(obj.D.dir), load_name);
+            assert(isfile(fpath), 'File not found: %s', fpath);
+            [fileDir, funcName, ext] = fileparts(fpath);
+            assert(strcmpi(ext,'.m'), 'Expected an .m file: %s', fpath);
+            % Temporarily move into folder so MATLAB resolves the right file
+            oldDir = pwd;
+            c = onCleanup(@() cd(oldDir));
+            cd(fileDir);
+            % Clear possible script/function caching conflicts
+            clear(funcName);
+            
+            % Call as function and capture returned x
+            obj.ExpInfo = feval(funcName);
             % already extract the Stim info from the ExpInfo
             obj(1).Stim(1).exp_type=obj.ExpInfo.exp_type; %MX_tones or OBISPulse etc
             obj(1).Stim(1).stimlist =obj.ExpInfo.stimlist; % descriptive table of the used stimuli

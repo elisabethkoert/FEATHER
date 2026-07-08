@@ -28,7 +28,6 @@ function [HistoRes] = getHistoResults(ee)
                     HistoRes.(sides{i}).(turns{j}).nCells=NaN; 
                     HistoRes.(sides{i}).(turns{j}).areaSlice=NaN;
                     HistoRes.(sides{i}).(turns{j}).ImageSeriesID=NaN;
-                    HistoRes.(sides{i}).(turns{j}).density2D =NaN;
                     HistoRes.(sides{i}).(turns{j}).density2Dslice =NaN;
                     HistoRes.(sides{i}).(turns{j}).numPlanesVolume=NaN; 
                     %check if there exists an image 
@@ -45,7 +44,6 @@ function [HistoRes] = getHistoResults(ee)
                             HistoRes.(sides{i}).(turns{j}).nCells=histImg.nCells;
                             HistoRes.(sides{i}).(turns{j}).areaSlice=histImg.areaSlice;
                             HistoRes.(sides{i}).(turns{j}).ImageSeriesID=histImg.SeriesID;
-                            HistoRes.(sides{i}).(turns{j}).density2D =histImg.density2D;
                             HistoRes.(sides{i}).(turns{j}).density2Dslice =histImg.density2Dslice;
                             HistoRes.(sides{i}).(turns{j}).numPlanesVolume= histImg.numPlanesVolume;
                             
@@ -56,7 +54,6 @@ function [HistoRes] = getHistoResults(ee)
                             all_nCells=[];
                             all_areaSlice=[];
                             all_ImageSeriesID={};
-                            all_density2D=[];
                             all_density2Dslice=[];
                             all_numPlanesVolume=[];
                             for kk=1:length(ix)
@@ -74,18 +71,7 @@ function [HistoRes] = getHistoResults(ee)
                                 else
                                     all_density2Dslice(kk)=NaN;
                                     all_areaSlice(kk)=NaN;
-                                end
-
-                                % 2D based on division by number of planes
-                                if ~isempty(histImg.numPlanesVolume) 
-                                    all_density2D(kk)=histImg.density2D;
-                                    all_numPlanesVolume(kk)=histImg.numPlanesVolume;
-                                else
-                                    all_density2D(kk)=NaN;
-                                    all_numPlanesVolume(kk)=NaN;
-                                end
-
-                              
+                                end                              
                             end
                             HistoRes.(sides{i}).(turns{j}).density=mean(all_density);
                             HistoRes.(sides{i}).(turns{j}).densityTransduced=mean(all_densityTransduced);
@@ -93,7 +79,6 @@ function [HistoRes] = getHistoResults(ee)
                             HistoRes.(sides{i}).(turns{j}).nCells=mean(all_nCells);
                             HistoRes.(sides{i}).(turns{j}).areaSlice=mean(all_areaSlice,'omitnan');
                             HistoRes.(sides{i}).(turns{j}).ImageSeriesID=all_ImageSeriesID;
-                            HistoRes.(sides{i}).(turns{j}).density2D =mean(all_density2D,'omitnan');
                             HistoRes.(sides{i}).(turns{j}).density2Dslice =mean(all_density2Dslice,'omitnan');
                             HistoRes.(sides{i}).(turns{j}).numPlanesVolume=mean(all_numPlanesVolume,'omitnan'); 
                         end

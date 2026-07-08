@@ -21,7 +21,6 @@ classdef histimg
         transductionRate double 
         gfpThreshhold double
         numPlanesVolume double % one plane is 1 µm thick
-        density2D double % SGNs/10^4  by division of Volume with num of planes
         density2Dslice double % in SGNs/10^4   µm2 by separate readout from one slice in stack
 
 
@@ -146,17 +145,6 @@ classdef histimg
                 obj.density2Dslice   = NaN;
                 obj.areaSlice       =NaN;
             end
-
-            if any("numPlanesVolume" == string(data.Properties.VariableNames))
-                obj.numPlanesVolume   = data.numPlanesVolume;
-                % devide volume in µm3 by num of planes (each 1 µm thick)
-                % for 2D area in µm2, gives density in SGNs/1000µm2
-                obj.density2D=(data.AllSGNs)/(data.Volume_ROI_microm3_/data.numPlanesVolume)*1000;
-            else
-                obj.numPlanesVolume   =  NaN;
-                obj.density2D=NaN;
-            end
-
 
             
             check = 1; % if return happened earlier this will stay 0

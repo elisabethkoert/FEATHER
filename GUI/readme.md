@@ -68,4 +68,39 @@ This GUI allows adding user input that cannot be automatically read from BERA ra
 - The **hardware** column automatically reads in the laser name. If there are mutliple lasers of the same name you can add e.g. the LaserSerial Nr. or COM Port in here to differentiate.
 
 
- ⚠️ To save your annotations you need to press the **EXPORT** button. If you previously worked on the ABR recording you can load your results annotations with the **IMPORT** button.
+ ⚠️ To save your annotations you need to press the **EXPORT** button. If you previously worked on the table you can load your results annotations with the **IMPORT** button.
+
+ ## `ICuserInput`
+ This GUI allows adding user input to the IC recordings. 
+ ![userberabrOD](ICuserInput.png)
+
+ The most important collumns necessary for most ICME functions are:
+ 
+ - The **fSeriesID column** shows the `icme` SeriesID.
+ - The **ExpType column** shows the type of experiment via the name of the ExpControl module.
+  - The **Filter column** is used to input manually added filters necessary to find the corresponding calibration files. This could be a physical optical density filter (used in eg. OBIS 594nm lasers) or an applied external current/voltage for oxxius lasers to change the intensity range. 
+ - The **Laser/oCI ID column** shows the Serial Nr of the Laser or the ID of the used implant.
+ - The **COMPort column** shows the setup specific COMPort used to address the laser since this is an identifier saved with the calibration file as well and used to retriee the correct one.
+ - The **UseRecording column** can be set to -1 in case a recording did not go well, e.g if it was stopped before the 30 repetitions were done/ there was a lot of unexpected noise etc. These recordings will be skipped in further analysis steps.
+
+ - The **d fiber column** shows the fiber diameter that was used for the stimulation.
+ - The **pos cochlea column** describes the position such as RW/base, mid or apex.
+
+ Other collumns that are more for personal notes but not necessary for the analysis
+ - The **pos fiber column** can be an increasing number in case more than one prosition was tested for a specific cochlea position.
+ - The **orientation column** is for additional notes such as "posterior" or more "lateral" fiber position.
+
+
+ In the top row you can also choose if the experimental metadata saved already calibrated values or only the laser intensities in %. Usually for new recordings this should be always true. In addition you can save the electrode array name and insertion depth as metadata for the exeriment.
+ The **PrefillTable** button reads in all available `icme` objects and the already known metadata from the raw-data ExpInfo.
+
+ ⚠️ To save your annotations you need to press the **Done & EXPORT** button. If you previously worked on the table you can load your results annotations with the **IMPORT** button.
+
+
+  ## `chooseHistImgToUse`
+ This GUI lets us mark if any of the available histology images should not be included in further analysis.
+ ![userberabrOD](chooseHistImgToUse.png)
+
+ This table allows to makr individual histology images with -1 in the **Use column** if we do not want to use them in further analysis. Prefill always chooses the last image taken per cochlea side and position.
+
+ ⚠️ To save your annotations you need to press the **Done** button. If you previously worked on the table you can load your results annotations with the **IMPORT** button.
