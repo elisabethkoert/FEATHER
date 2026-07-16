@@ -25,3 +25,7 @@ userID('EK'); % this is the user ID, or the analyzer
 % loaded if available, if set to off we reanalyse from scratch and overwrite 
 % saved processed data
 enablecache ('on'); 
+
+%% add matnwb toolbox that allows for loading and saving in the NWB data format
+nwb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\matnwb';
+addpath(genpath(nwb_path));
