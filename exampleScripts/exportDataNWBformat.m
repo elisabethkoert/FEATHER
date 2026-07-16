@@ -1,4 +1,5 @@
 %% example script explaining how to export data from FEATHER into the NWB format
+%% still in development
 
 %% 1) Select one animal experiment
 ExpID = "GEK030";
