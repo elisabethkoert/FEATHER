@@ -45,9 +45,8 @@ end
 %make
 L(1).IC_SeriesID = icmeID;
 L(1).ExpID = string(obj.ExpID);
-L(1).allDates_SU = icmeDate;%no
-L(1).dateID_SU = min(L(1).allDates_SU);%no
-% the generated list will be saved. IN cse there is a
+L(1).allDates_IC = icmeDate;      
+% the generated list will be saved. In case there is a
 % previous list, it will be replaced
 save_name = 'List_IC.mat';
 save(fullfile(getProcessedDataDir(obj),save_name),'L');

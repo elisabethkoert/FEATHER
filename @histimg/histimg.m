@@ -33,22 +33,26 @@ classdef histimg
             %   Creates the HISTIMG directly connected to an anex, the
             %   SeriesID has to follow the format L_mid with an optional
             %   versin if more than 1 exists eg. L_mid_V3
-             if  status_cache == 1  % if caching is enabled, I will import hte anex, including the raw directories :)
-                obj.ExpID = ee.ExpID;
-                obj.filename=filename;
-                obj.SeriesID = SeriesID;
-                try  obj = loadHistImg(obj);
-                catch 'Caching is on, but no processed data are there. try enablecache(off)';
-                end
-
+             if  status_cache == 1 
+                    obj.ExpID = ee.ExpID;
+                    obj.SeriesID = SeriesID;
+                    if nargin>2 && exist('D','var') && ~isempty(D)
+                        obj.D = D;
+                    end
+                    if nargin>3 && exist('filename','var') && ~isempty(filename)
+                        obj.filename = filename;
+                    end
+                    try  obj = loadHistImg(obj);
+                     catch 'Caching is on, but no processed data are there. try enablecache(off)';
+                    end
             else
                 obj.ExpID = ee.ExpID;
                 obj.SeriesID = SeriesID;
                 
-                if nargin>2 &&  exist('D','var')
+                 if nargin>2 &&  exist('D','var')
                     obj.D = D;
                 end
-                if nargin>2 && exist('filename','var')
+                if nargin>3 && exist('filename','var')
                     obj.filename=filename;
                 end
                 % get info such as side and version from the SeriesID

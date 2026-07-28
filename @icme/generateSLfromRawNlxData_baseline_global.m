@@ -1,4 +1,4 @@
-function  [spik_lists_all,used_analysis_parameters,all_electrode_names]=generateSLfromRawNlxData_baseline_global(IC,threshold,pre_time,post_time,ref_time,...
+function  [spik_lists_all,used_analysis_parameters,all_electrode_names,Trigger]=generateSLfromRawNlxData_baseline_global(IC,threshold,pre_time,post_time,ref_time,...
     low_filt,high_filt,filt_ord,prestimrectime,poststimrectime,use_artefact_removal)
 %% ========================================================================
 % icme/generateSLfromRawNlxData 
@@ -20,7 +20,7 @@ function  [spik_lists_all,used_analysis_parameters,all_electrode_names]=generate
 %       the Spik_list for each of these electrodes. Spik_list has for each
 %           detected spike one row with the collumns  (1 stim, 2 n_rep, 3 ypos ( (stim-1)+1/max(Header.n_rep)*n_rep for easier raster plot generation 4
 %       chan 5 unit ID (only with spike sorting so not implemented) 6 time after trigger
-% used_analysis_parameters (struct) used analysis parameters including
+%   used_analysis_parameters (struct) used analysis parameters including
 %       threshold; % treshold [V?] to detect multiunit activity as spike
 %       pre_time; post_time;  % waveform-window around a detected spike
 %       ref_time;    % refractory period [ms]?
@@ -28,18 +28,19 @@ function  [spik_lists_all,used_analysis_parameters,all_electrode_names]=generate
 %       prestimrectime; poststimrectime % time around trigger that spikes are
 %       extracteed
 %       num_removed_spikes: number of spieks removed in artefact removal
-% all_electrode_names (struct with names elec0 -elec31 )
+%   all_electrode_names (struct with names elec0 -elec31 )
+%   Trigger (struct):
+%     NrTrigger           - number of recorded stimulus trials
+%     TrigBeginTime       - 1 x NrTrigger, absolute NLX/posix time [us],
+%                           in stimulus-presentation order
+%     RecordingBeginTime  - absolute NLX/posix time [us], 'Starting Recording' event
+%     RecordingStopTime   - absolute NLX/posix time [us], 'Stopping Recording' event
+%     stim_list           - NrTrigger x 2: [stimlist_row_id, repetition_number]
+%     stim_n_rep          - n_stim x 1, presentations per stimlist row
+%     stim_names          - unique stimlist row ids used
+%     n_stim              - number of unique stimlist rows used
 
-% EK 04.02.2025: changes compared to old spike extraction: 
-%   refactory time removed since mutliunit activity
-%   Used only the 100 ms before trigger for threshold estimation not the
-%   whole data
-%
-% Author: Elisabeth  Koert, modified by Anna Vavakou and Niels Albrecht
-% Affiliation: Institute for Auditory Neuroscience, Inner Ear Lab &
-% Auditory Circuit Lab, Göttingen, Germany
-% Last changed date: 19.11.2025
-%
+
 %% initialize sorting parameters
 arguments
     IC
@@ -69,100 +70,8 @@ filename_evt = fullfile(eventFiles.folder,eventFiles.name);
     Nlx2MatEV(filename_evt, [1 1 1 1 1], 0, 1, 0 );
 % -------------------------------------------
 
-%% Extract the event files.
-% Prepare the basic stim_list/event IDs and triggers.
-% Resort any missorted timestamps/triggers.
-[sortedTimeStamps, sortIdx] = sort(evt.TimeStamps);
-% Apply the same sorting to EventIDs, TTLs, EventStrings
-evt.TimeStamps = evt.TimeStamps (sortIdx);
-evt.EventIDs = evt.EventIDs (sortIdx);
-evt.TTLs = evt.TTLs (sortIdx);
-evt.Extras = evt.Extras (:,sortIdx);
-evt.EventStrings = evt.EventStrings(sortIdx);
-%
-% get recording start and stop timepoint
-IdxStartRecording =  find(contains( [evt.EventStrings(:)], 'Starting Recording')); 
-IdxStopRecording =  find(contains( [evt.EventStrings(:)], 'Stopping Recording'));
-% check if we accidently have a wrong recording in here
-if length(IdxStartRecording)>1
-    % cut out everything before the last recording start
-    evt.TimeStamps = evt.TimeStamps (IdxStartRecording(end):end);
-    evt.EventIDs = evt.EventIDs (IdxStartRecording(end):end);
-    evt.TTLs = evt.TTLs (IdxStartRecording(end):end);
-    evt.Extras = evt.Extras (:,IdxStartRecording(end):end);
-    evt.EventStrings = evt.EventStrings(IdxStartRecording(end):end);
-end
-%
-% get recording start and stop timepoint
-IdxStartRecording =  find(contains( [evt.EventStrings(:)], 'Starting Recording'));
-IdxStopRecording =  find(contains( [evt.EventStrings(:)], 'Stopping Recording')); 
-%
-% get all timepoints of Trial info
-stim__descriptor_Idx = find(cellfun(@(x) contains(x, 'Trial = '), evt.EventStrings, 'UniformOutput', true));
-stim_names2  =  [evt.EventStrings(stim__descriptor_Idx)]; %EventString
-%
-% -------------------------------------------
-%% Do some sanity checks to check for corrupted data
-% check for duplicates
-vals = cellfun(@(s) sscanf(s, 'Trial = %d; Stim = %d;').', stim_names2, 'UniformOutput', false);
-M = vertcat(vals{:});
-TrialIDs=M(:,1);
-StimListID=M(:,2);
-num_of_trials=length(TrialIDs);
-num_applied_stimuli=length(unique(StimListID));
-names_applied_stimuli=unique(StimListID);
-%
-if num_applied_stimuli ~= size(IC.Stim.stimlist,1)
-        error(sprintf('num of found stimuli in raw data not same as IC.stimlist for %s',IC.SeriesID))
-end
-if (num_of_trials~=num_applied_stimuli*IC.Stim.n_rep)
-    error(sprintf('not all repetitions found in data for %s',IC.SeriesID))
-end
-
-if any(diff(TrialIDs)~=1)
-    % check if error persists without sorting and undo sorting if necessary
-    % (was the case for some recordings)
-    filename_evt = fullfile(eventFiles.folder,eventFiles.name);
-        [evt.TimeStamps, evt.EventIDs, evt.TTLs, evt.Extras, evt.EventStrings] = ...
-    Nlx2MatEV(filename_evt, [1 1 1 1 1], 0, 1, 0 );
-    % get all timepoints of Trial info
-    stim__descriptor_Idx = find(cellfun(@(x) contains(x, 'Trial = '), evt.EventStrings, 'UniformOutput', true));
-    stim_names2  =  [evt.EventStrings(stim__descriptor_Idx)]; %EventString
-    vals = cellfun(@(s) sscanf(s, 'Trial = %d; Stim = %d;').', stim_names2, 'UniformOutput', false);
-    M = vertcat(vals{:});
-    TrialIDs=M(:,1);
-    StimListID=M(:,2);
-    if any(diff(TrialIDs)~=1) %error persists
-            error(sprintf('trial nubers of triggers are not constantly counting up for %s',IC.SeriesID))
-    end
-end
-
-% find all the trigger timepoints
-idx_triggers= find(contains( [evt.EventStrings(:)], '(0x0001)')); 
-num_of_triggers=length(idx_triggers);
-if num_of_triggers~=num_of_trials
-        error(sprintf('did not find the right number of tirggers for stimulus presentations for %s',IC.SeriesID))
-end
-% make the stimlist old way: first collumn: ID of the Applied stimulus (row
-% in IC.Stim.Stimlist) second collumn: rep of this sitmulus
-stim_list=zeros(num_of_triggers,2);
-stim_list(:,1) = StimListID; 
-stim_n_rep = zeros(num_applied_stimuli,1); % how often each type of applied stimulus got applied
-for iUnStim = names_applied_stimuli'
-    iCurStim = find(stim_list(:,1) == iUnStim);
-    stim_list(iCurStim,2) = 1:length(iCurStim);
-    stim_n_rep(names_applied_stimuli == iUnStim) = length(iCurStim);
-end
-
-% Collect some info regarding the triggers
-Trigger.NrTrigger = num_of_trials; % number of recorded triggers
-Trigger.TrigBeginTime = evt.TimeStamps(idx_triggers); %within each stimulus
-Trigger.RecordingBeginTime = evt.TimeStamps(IdxStartRecording); %within each stimulus
-Trigger.RecordingStopTime = evt.TimeStamps(IdxStopRecording); %within each stimulus
-Trigger.stim_list = stim_list;
-Trigger.stim_n_rep = stim_n_rep;
-Trigger.stim_names = names_applied_stimuli;
-Trigger.n_stim = num_applied_stimuli;
+%% Extract the Trigger info from the event file
+Trigger = parseNlxTriggerInfo(IC);
 
 % -------------------------------------------
 %% extraction of raw data from files, filtering and global mean calulation

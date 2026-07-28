@@ -74,15 +74,18 @@ classdef icme
             assert(isfile(fpath), 'File not found: %s', fpath);
             [fileDir, funcName, ext] = fileparts(fpath);
             assert(strcmpi(ext,'.m'), 'Expected an .m file: %s', fpath);
+            
             % Temporarily move into folder so MATLAB resolves the right file
             oldDir = pwd;
             c = onCleanup(@() cd(oldDir));
             cd(fileDir);
+            
             % Clear possible script/function caching conflicts
             clear(funcName);
             
             % Call as function and capture returned x
             obj.ExpInfo = feval(funcName);
+
             % already extract the Stim info from the ExpInfo
             obj(1).Stim(1).exp_type=obj.ExpInfo.exp_type; %MX_tones or OBISPulse etc
             obj(1).Stim(1).stimlist =obj.ExpInfo.stimlist; % descriptive table of the used stimuli
@@ -216,17 +219,14 @@ classdef icme
                     return
                 end
             end
-            % [spik_lists_all,used_analysis_parameters,all_electrode_names]=generateSLfromRawNlxData_BackgroundNoise(obj,...
-            %     threshold,pre_time,post_time,ref_time,low_filt,high_filt,filt_ord,prestimrectime,poststimrectime,use_artefact_removal);
-            [spik_lists_all,used_analysis_parameters,all_electrode_names]=generateSLfromRawNlxData_baseline_global(obj,...
+            [spik_lists_all,used_analysis_parameters,all_electrode_names,Trigger]=generateSLfromRawNlxData_baseline_global(obj,...
                 threshold,pre_time,post_time,ref_time,low_filt,high_filt,filt_ord,prestimrectime,poststimrectime,use_artefact_removal);
             % Info about detected spikes
             SL.spik_list_all=spik_lists_all;
             SL.all_electrode_names=all_electrode_names; % constantly needed for further analysis
             SL.all_electrodes=[0:1:length(all_electrode_names)-1]';
-            SL.analysis_parameters=used_analysis_parameters; % should include all variables during spiek detection which are
-            % pre_time, post-time around trigger, low/high pass
-            % filter + filter order, ggf threshold
+            SL.analysis_parameters=used_analysis_parameters; 
+            SL.Trigger=Trigger; % to keep track of absolute trigger timestamps with the processed data
             obj.SL=SL;
         end
 
@@ -488,38 +488,6 @@ classdef icme
             
         end
 
-        function bad_elecs = findBadElectrodes(obj,meanSpikeRates)
-            % icme\findBadElectrodes by checking for outliers in the Spike rate
-            % ( more than 3 times std from mean) for the first presented
-            % stimulus which should have the intensity 0 (mW or dB)
-            % input:
-            %    obj icme
-            %   meanSpikeRates (optional) 32xnum_stimuli double containing
-            %       calculated spike rates for each electrode and stimulus
-            % output:
-            %   bad_elecs nx1 array of electrodes that were detected as bad
-           
-            % if no spike list is provided
-            if nargin<2
-                [meanSpikeRates,~]  = calculateSpikeRate(obj);
-            end
-            if strcmp(obj.ExpInfo.exp_type,'MX_tones')
-                if obj.Stim.stimlist(1,4)~=0
-                    fprintf('no 0 intensity stimulus for %s',string(obj.SeriesID))
-                    bad_elecs=[];
-                    return
-                end
-            elseif contains(obj.ExpInfo.exp_type,'OBIS_LS594_Pulse')
-                if obj.Stim.stimlist(1,1)~=0
-                    fprintf('no 0 intensity stimulus for %s',string(obj.SeriesID))
-                    bad_elecs=[];
-                    return
-                end
-            end
-            hasOutliers = isoutlier(meanSpikeRates(:,1),"mean");% check if it is an outlier for first Presented stimulus
-            hasOutliers=any(hasOutliers,2); % check if any electrode was outlier for any stimulus
-            bad_elecs=obj.SL.all_electrodes(hasOutliers)+1;
-        end
 
 
     end

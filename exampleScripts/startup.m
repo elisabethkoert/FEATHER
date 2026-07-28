@@ -3,7 +3,7 @@ clear all; close all; clear global;
 
 %% setting up the feather toolbox
 % add the toolbox path to your MATLAB
-tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\feather\invivoEphysFEATHER';
+tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\forFChrimsonPaper\FEATHER';
 addpath(genpath(tb_path));
 
 %% set the data paths for raw and processed data
@@ -26,6 +26,3 @@ userID('EK'); % this is the user ID, or the analyzer
 % saved processed data
 enablecache ('on'); 
 
-%% add matnwb toolbox that allows for loading and saving in the NWB data format
-nwb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\matnwb';
-addpath(genpath(nwb_path));
