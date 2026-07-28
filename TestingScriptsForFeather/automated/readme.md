@@ -1,0 +1,1 @@
+This testing suite can currently only be run by members of the IAN with access to the raw-data servers. In the future we plan to upload the example raw data with the toolbox so it can be used by other labs as well.
