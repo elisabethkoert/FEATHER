@@ -1,12 +1,12 @@
 # FEATHER
 FEATHER: a Framework for Experimental Analysis of Tissue and Electrophysiology for Heterogeneous Experiments and Researchers
 
-This project is a MATLAB toolbox developed in the Institute for Auditory Neuroscience to process the various types of data generated in connection to an animal experiment in the institute from *in-vivo* electrophysiology recordings to results from immunohistochemical analysis of cochlea tissue. The current version only works with the institute specific data types, but future releases should try to include more open source and standardized data formats.
+This project is a MATLAB toolbox developed in the Institute for Auditory Neuroscience to process the various types of data generated in connection to an animal experiment in the institute from *in-vivo* electrophysiology recordings to results from immunohistochemical analysis of cochlea tissue. 
 
 ## Authors
 The FEATHER framework was established and architected by Anna Vavakou. Elisabeth Koert and Niels Albrecht later joined as developers and contributed substantially to the continued development of the toolbox. Elisabeth Koert prepared this public release from the institute’s internal codebase. 
 
-# Affiliation
+## Affiliation
 Institute for Auditory Neuroscience  
 University Medical Center Goettingen <br>
 Robert-Koch-Str. 40<br>
@@ -16,7 +16,7 @@ Germany
 ---
 
 # Toolbox Overview
-FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment. FEATHER separates raw and processed data, preserving raw data integrity while persistently storing processed outputs to avoid recomputation. This enables reproducible and efficient workflows across multiple users. 
+FEATHER is organized around a few core object types that cover the full workflow surrounding one animal experiment. GUIs allow interaction with the objects to add necessary manual user input for each experiment. FEATHER separates raw and processed data, preserving raw data integrity while persistently storing processed outputs to avoid recomputation. This enables reproducible and efficient workflows across multiple users. It was developed for our institute specific data types. While it supports the export and import with the Neurodata Without Borders (https://nwb.org/) standard to facilitate data sharing, using it for data aquired in other labs may require additional parsers. Please contact the developers if you have any trouble deploying the toolbox. 
 
 ## Objects
 
@@ -72,6 +72,8 @@ At this level, FEATHER enables:
 ### associated GUIs for manual user input
 `chooseHistImgToUse.mlapp` requests user input to define which histimg should be used when analysing across the full anex in case multiple images have been obtained from the same region.  
 
+
+
 ## Surrounding Utility Modules
 
 ### `dirManagement`
@@ -86,6 +88,15 @@ Reusable plotting helpers used across ABR, IC, and summary analyses to create fo
 
 ### `multipleAnexFunctions`
 Cross-experiment helper functions for pooling results from multiple animals (for example, pooled PSTH-style analyses across multiple `anex` objects).
+
+### `nwb_interface`
+
+FEATHER includes a dedicated interface for converting experiment data to and from the **Neurodata Without Borders (NWB)** format. This facilitates data sharing with collaborators, archiving in public repositories, and analysis using external tools that support the NWB ecosystem.The NWB interface functions are located in the  subfolder which also contains a detailed README. Example code can be found in exampleScripts/exportDataNWBformat.m. It contains functions for:
+- **Export to NWB:** Convert `anex` objects and associated `berabr`, `icme`, and `histimg` data into a single, standardized `.nwb` file.
+    *   Supports exporting all data or specific subsets (e.g., only ABRs, or specific SeriesIDs).
+    *   Preserves manual annotations (wave peaks, user input tables) within the NWB file structure.
+- **Import from NWB:** Reconstruct FEATHER objects from an NWB file, enabling round-trip data transfer and analysis of NWB datasets within the FEATHER framework.
+
 
 ## Directory Management and Processed Data Layout
 
@@ -124,7 +135,6 @@ f_<ExpID>/
   List_IC_raw.mat                   # cached IC raw list
   List_IC.mat                       # cached IC processed list
   *.mat                             # additional anex wide IC analysis results  (eg. thresholds)
-
 
 
   HISTO/
