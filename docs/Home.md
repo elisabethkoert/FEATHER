@@ -11,6 +11,8 @@ This wiki is organized into two tracks:
 
 If you're unsure which applies to you: if you're clicking through GUIs and running example scripts, start with the **User Guide**. If you're opening `.m` files in the editor to change how something works, go to the **Developer Guide**.
 
+⚠️ The Wiki has been developed for new users in the institue and some points may not apply to external users.
+
 ---
 
 ## 📗 User Guide
@@ -48,7 +50,7 @@ FEATHER organizes all data belonging to one animal experiment under a single `an
 - `icme` — one inferior colliculus multielectrode recording
 - `histimg` — one histology image set
 
-Raw data and processed (analysed) data are always kept strictly separate, and processed results are cached to disk so they don't need to be recomputed every time. If this sentence doesn't mean much to you yet, that's exactly what [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]] is for.
+Raw data and processed (analysed) data are always kept strictly separate, and processed results are cached to disk so they don't need to be recomputed every time. If this sentence doesn't mean much to you yet, that's exactly what [How FEATHER Works (Big Picture)](./User-Guide/How-FEATHER-Works.md) is for.
 
 ---
 
