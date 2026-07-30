@@ -212,13 +212,3 @@ Copy this into your Merge Request description and check off each item:
 
 
 ---
-
-
-
-## See Also
-- [[Automated Testing Guide|Home/Developer-Guide/Automated-Testing-Guide]]
-- [[Getting Started with Git|User-Guide-Git-Basics]]
-- [[Coding Conventions|Home/Developer-Guide/Coding-Conventions]]
-- [[Architecture Overview|Home/Developer-Guide/Architecture-Overview]]
-
-⬅ [[Back to Developer Guide|Home/Developer-Guide]]
