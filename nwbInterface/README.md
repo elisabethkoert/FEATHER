@@ -4,7 +4,7 @@ This subfolder contains the scripts neccessary for exporting and loading FEATHER
 
 ## Overview
 
-Neurodata without borders (https://nwb.org/) is a data standard and software ecosystem for sharing neurophysiology data.  To use it with Matlab it is necessary to pull the MATNWB toolbox as described here (https://nwb.org/matnwb/). For the development of these functions we used the version 2.7.0.
+Neurodata without borders (https://nwb.org/) is a data standard and software ecosystem for sharing neurophysiology data.  To use it with Matlab it is necessary to pull the MATNWB toolbox as described here (https://nwb.org/matnwb/). For the development of these functions we used the version 2.9.0.
 
 The NWB interface together with the functions in this folder allows users to convert `anex` (animal experiment) objects and their associated data (`berabr`, `icme`, `histimg`) into a standardized `.nwb` file. This facilitates data sharing, archiving, and analysis with external tools that support the NWB standard.
 

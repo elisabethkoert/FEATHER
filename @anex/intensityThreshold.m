@@ -17,7 +17,7 @@ ExpIntThr=[]; %return empty if no image data exists yet
 if status_cache==1
     try
         load_name = strcat(StimModality,'ABRthreshhold.mat');
-        load(fullfile(getProcessedDataDir(ee),load_name)),
+        load(fullfile(getProcessedDataDir(ee),load_name));
         disp('ABR threshold results loaded.')
     catch 
         disp('ABR threshhold results need to be compiled');
@@ -66,8 +66,8 @@ elseif status_cache==0
         minValue = min(IntMin_temp); %there might be more than one minimum values, if the same intensity has been used multiple times
         [iMin, ~] = find(IntMin_temp == minValue);
         minValues=[minValues,minValue];
-        minTraces={minTraces,indexBeraTrace_temp(iMin)}
-        all_Bs=[all_Bs,B_all(iMin)]
+        minTraces={minTraces,indexBeraTrace_temp(iMin)};
+        all_Bs=[all_Bs,B_all(iMin)];
     end
 
     ExpIntThr.IntensityThreshold = minValues;

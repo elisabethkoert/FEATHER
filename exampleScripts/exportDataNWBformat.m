@@ -57,9 +57,52 @@ nwbFilename=sprintf('%s.nwb', ExpID);
 
 ee = createFeatherObjectsFromNWB(nwbFilename, nwbDir,'overwrite', true);
 
-nwbFilename='GEK030_ABR_only.nwb';
+%% test Bera functions
+% threshold calcuation
+enablecache off % make sure you load raw data
+[ExpIntThrAcoustic] = intensityThreshold(ee, 'Acoustic');
+[ExpIntThrOptical] = intensityThreshold(ee, 'Optical');
 
-ee2=createFeatherObjectsFromNWB(nwbFilename, nwbDir,'overwrite', true);
+% GUI interaction
+enablecache on
+exploreBerabr(ee)
+userberabrOD(ee)
 
+% example plot
+enablecache('on') % load already processed data
+Bs=listBerabr(ee); % get a list of all berabr object
 
+% load a single ABR recording and plot every second trace
+B=loadBerabr(berabr(ee,string(Bs.ABR_SeriesID(1))));
+figure
+hold on
+for ii =1:2:B.nTraces 
+    plot(B.F(ii).t*1e3, B.F(ii).ABR*1e6);
+end
+xlabel('Time (ms)')
+ylabel('Amplitude (\muV)','interpreter','Tex')
+title('aABR traces')
 
+%% test icme functions
+
+% get thresholds
+enablecache off
+% optic all RW 200 µm fibers
+dPrimeMode='baseline';
+optThr=intensityThresholdIC(ee,  dPrimeMode);
+% acoustic for each frequency
+acoustThr=intensityThresholdIC(ee,'baseline','MX_tones',[4,0,90;1,500,32000]);
+
+% GUI interactions
+ICuserInput(ee)
+
+% example processing for pulse intensity protocol/ SoE
+IC_SeriesID='GEK030_0004';
+t_start=3;
+t_stop=25;
+enablecache on
+IC=loadIcme(icme(ee,IC_SeriesID));
+[meanSpikeRates, spikeRateAllReps]  = calculateSpikeRate(IC,t_start,t_stop); % get spikerates
+stim_criteria_array=[1,0,60;3,1,1]; % 0 to 30 mW, 1 ms stimuli
+d_prime_results = calculateDprimeMultipleStimVars(IC,'increasingLvl',stim_criteria_array,t_start,t_stop);
+plotHeatmapsIC(IC,'SR',stim_criteria_array,t_start,t_stop)

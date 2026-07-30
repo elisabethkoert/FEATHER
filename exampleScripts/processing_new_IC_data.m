@@ -87,8 +87,8 @@ IC=loadIcme(icme(ee,IC_SeriesID));
 % calculate SoE
 [meanSpikeRates, spikeRateAllReps]  = calculateSpikeRate(IC,t_start,t_stop); % get spikerates
 stim_criteria_array=[1,0,60;3,1,1]; % 0 to 30 mW, 1 ms stimuli
-d_prime_results = calculateDprime(IC,'increasingLvl',stim_criteria_array,t_start,t_stop);
-d_prime_results = calculateDprime(IC,'baseline',stim_criteria_array,t_start,t_stop);
+d_prime_results = calculateDprimeMultipleStimVars(IC,'increasingLvl',stim_criteria_array,t_start,t_stop);
+d_prime_results = calculateDprimeMultipleStimVars(IC,'baseline',stim_criteria_array,t_start,t_stop);
 elecs=getResponsiveUnits(IC,stim_criteria_array,t_start,t_stop);
 plotHeatmapsIC(IC,'SR',stim_criteria_array,t_start,t_stop)
 plotHeatmapsIC(IC,'dPrimeCum',stim_criteria_array,t_start,t_stop)

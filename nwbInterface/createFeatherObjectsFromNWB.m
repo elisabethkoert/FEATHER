@@ -267,7 +267,15 @@ if nwb.processing.isKey('feather_annotations')
         icUIfile = fullfile(icDir, sprintf('ICUserInput_%s.mat', ExpID));
         guardExistingFile(icUIfile, overwrite, sprintf('ICUserInput_%s', ExpID));
         if ~isfolder(icDir); mkdir(icDir); end
-        save(icUIfile, 'UT');
+        % also get electrode information to add in the file
+        IC_MEA=nwb.general_devices.get('IC_MEA');
+        
+        Electrode=struct();
+        Electrode.depth=0;
+        Electrode.name=IC_MEA.serial_number;
+        % nwb format should always only save the calibrated stimlists
+        CalibrationDone=true;
+        save(icUIfile, 'UT','CalibrationDone','Electrode');
         fprintf('  ICUserInput_%s.mat written.\n', ExpID);
     end
 
