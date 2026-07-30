@@ -106,4 +106,3 @@ HistoRes = getHistoResults(ee);
 
 - [GUI Reference](./GUI-Reference.md) for detailed button-by-button GUI instructions
 - [FAQ / Troubleshooting](./FAQ.md) if something goes wrong
-- Developer Guide: [Known Limitations / Stub Classes](../Developer-Guide/Known-Limitations.md) for other early-stage parts of the toolbox
