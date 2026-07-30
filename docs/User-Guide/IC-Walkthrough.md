@@ -1,6 +1,6 @@
 # IC Analysis Walkthrough
 
-This page walks you through analysing inferior colliculus (IC) multielectrode recordings for one animal experiment, from raw data to spike rates, response thresholds, and standard analysis plots. It assumes you have already completed [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]] and read [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]].
+This page walks you through analysing inferior colliculus (IC) multielectrode recordings for one animal experiment, from raw data to spike rates, response thresholds, and standard analysis plots. It assumes you have already completed [Getting Started – Installation & Toolbox Setup](./Getting-Started.md) and read [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md).
 
 A full working example of everything on this page is available in the toolbox at:
 
@@ -18,7 +18,7 @@ In FEATHER, each individual IC recording is represented by an `icme` object ("in
 
 You will need:
 
-- An existing `anex` for your animal (usually already created during ABR analysis — see [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]).
+- An existing `anex` for your animal (usually already created during ABR analysis — see [ABR Analysis Walkthrough](./ABR-Walkthrough.md)).
 - The **raw data folder path** for the IC recordings. This is often the same raw-data folder used for ABR.
 
 ---
@@ -85,7 +85,7 @@ For each `icme`, this table lets you record information that FEATHER cannot read
 - the **fiber diameter** and **cochlear position** (e.g. round window/base, mid, apex),
 - whether the recording should be **excluded** from further analysis (set `Use` to `-1`, e.g. for interrupted or noisy recordings).
 
-Press **Done & EXPORT** when finished. Full details of every column are in the [[GUI Reference|User-Guide-GUI-Reference]] page.
+Press **Done & EXPORT** when finished. Full details of every column are in the [GUI Reference](./GUI-Reference.md) page.
 
 ---
 
@@ -176,7 +176,7 @@ Most of these functions take a **`stim_criteria_array`** as input, which tells F
 
 ## What's next
 
-- [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]
-- [[GUI Reference|User-Guide-GUI-Reference]] for detailed button-by-button GUI instructions
-- [[FAQ / Troubleshooting|User-Guide-FAQ]] if something goes wrong
-- Developer Guide: [[How to Add a New Experiment/Protocol Type|Developer-Guide-Adding-New-Experiment-Type]], if your `stim_criteria_array`/experiment type isn't covered by existing functions
+- [Histology Analysis Walkthrough](./Histology-Walkthrough.md)
+- [GUI Reference](./GUI-Reference.md) for detailed button-by-button GUI instructions
+- [FAQ / Troubleshooting](./FAQ.md) if something goes wrong
+- Developer Guide: [How to Add a New Experiment/Protocol Type](../Developer-Guide/Adding-New-Experiment-Type.md), if your `stim_criteria_array`/experiment type isn't covered by existing functions
