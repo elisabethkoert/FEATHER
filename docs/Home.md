@@ -7,7 +7,7 @@ This wiki is organized into two tracks:
 | For Users | For Developers |
 |---|---|
 | Running standard ABR, IC, or histology analyses using existing pipelines and GUIs. No coding experience required. | Extending or modifying the toolbox itself — adding new hardware, experiment types, or analysis methods. |
-| **→ Go to [[User Guide]]** | **→ Go to [[Developer Guide]]** |
+| **→ Go to [User Guide](-\User-Guide.md)** | **→ Go to [Developer Guide](.\Developer-Guide.md)** |
 
 If you're unsure which applies to you: if you're clicking through GUIs and running example scripts, start with the **User Guide**. If you're opening `.m` files in the editor to change how something works, go to the **Developer Guide**.
 
@@ -15,28 +15,28 @@ If you're unsure which applies to you: if you're clicking through GUIs and runni
 
 ## 📗 User Guide
 *For running standard analyses — no prior coding experience assumed.*
-- [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]]
-- [[Getting Started with Git|User-Guide-Git-Basics]] — for absolute beginners to Git
-- [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]] — what an `anex` is, what "caching" means, where your results go. **Read this before the walkthroughs below.**
-- [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]
-- [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]]
-- [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]
-- [[GUI Reference|User-Guide-GUI-Reference]]
-- [[FAQ / Troubleshooting|User-Guide-FAQ]]
+- [Getting Started – Installation & Toolbox Setup](./User-Guide/Getting-Started.md)
+- [Getting Started with Git](./User-Guide/Git-Basics.md) — for absolute beginners to Git
+- [How FEATHER Works (Big Picture)](./User-Guide/How-FEATHER-Works.md)  **Read this before the walkthroughs below.**
+- [ABR Analysis Walkthrough](./User-Guide/ABR-Walkthrough.md)
+- [IC Analysis Walkthrough](./User-Guide/IC-Walkthrough.md)
+- [Histology Analysis Walkthrough](./User-Guide/Histology-Walkthrough.md)
+- [GUI Reference](./User-Guide/GUI-Reference.md)
+- [FAQ / Troubleshooting](./User-Guide/FAQ.md)
 
 ---
 
 ## 📘 Developer Guide
 *For extending or maintaining the toolbox itself.*
-- [[Architecture Overview|Home/Developer-Guide/Architecture-Overview]] — class hierarchy, data flow, file conventions
-- [[Coding Conventions|Home/Developer-Guide/Coding-Conventions]] — naming, caching pattern, `testSafeDir`, folder structure
-- [[Adding a new experimental data type object|Home/Developer-Guide/How-to-add-a-new-experimental-data-type-as-a-new-object-class]]
-- [[Adding New Hardware|Home/Developer-Guide/Adding-New-Hardware]]
-- [[Developer Guide Adding New Stimulus Type for IC|Home/Developer-Guide/Adding-New-Experiment-Type]]
-- [[Adding GUI Field|Home/Developer-Guide/Adding-GUI-Field]]
-- [[Git Workflow & Testing Before Merging|Home/Developer-Guide/Git-Workflow-&-Testing-Before-Merging]]
-- [[Automated Testing Guide|Home/Developer-Guide/Automated-Testing-Guide]]
-- [[Known Limitations|Home/Developer-Guide/Known-Limitations]] — `@expsess`, `@oci`, and other early-stage code
+- [Architecture Overview](./Developer-Guide/Architecture-Overview.md) — class hierarchy, data flow, file conventions
+- [Coding Conventions](./Developer-Guide/Coding-Conventions.md) — naming, caching pattern, `testSafeDir`, folder structure
+- [Adding a new experimental data type object](./Developer-Guide/How-to-add-a-new-experimental-data-type-as-a-new-object-class.md)
+- [Adding New Hardware](./Developer-Guide/Adding-New-Hardware.md)
+- [Developer Guide Adding New Stimulus Type for IC](./Developer-Guide/Adding-New-Experiment-Type.md)
+- [Adding GUI Field](./Developer-Guide/Adding-GUI-Field.md)
+- [Git Workflow & Testing Before Merging](./Developer-Guide/Git-Workflow-&-Testing-Before-Merging.md)
+- [Automated Testing Guide](./Developer-Guide/Automated-Testing-Guide.md)
+- [Known Limitations](./Developer-Guide/Known-Limitations.md)
 
 ---
 
