@@ -7,7 +7,7 @@ title: FAQ
 
 This page collects error messages and unexpected behavior you may run into while using FEATHER, with plain-language explanations of what's going on and what to do about it. If you don't find your issue here, ask a labmate or your toolbox maintainer — and consider adding it to this page afterwards so the next person doesn't have to ask.
 
-For setup-specific problems (paths, MATLAB toolboxes, Git), see [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]] and [[Getting Started with Git|User-Guide-Git-Basics]] first.
+For setup-specific problems (paths, MATLAB toolboxes, Git), see [Getting Started – Installation & Toolbox Setup](./Getting-Started.md) and [Getting Started with Git](./Git-Basics.md) first.
 
 ---
 
@@ -15,7 +15,7 @@ For setup-specific problems (paths, MATLAB toolboxes, Git), see [[Getting Starte
 
 This means you called a function that expects `enablecache` to be `'on'`, but it is currently set to `'off'`. This is a safety mechanism, not a bug.
 
-**Fix:** run `enablecache on` before the command that failed, then try again. See [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]] for what caching actually means. Changing the caching behaviour may fix a lot of other issues as well.
+**Fix:** run `enablecache on` before the command that failed, then try again. See [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md) for what caching actually means. Changing the caching behaviour may fix a lot of other issues as well.
 
 ---
 ## Calibration issues: e.g. "no calibration file found for this recording" / "multiple calibration files found for this recording"
@@ -57,7 +57,7 @@ Expected columns (default names):
 
 FEATHER refuses to save processed data into any folder path containing the word `archiv`. This is a deliberate safety check (`testSafeDir`) to prevent processed results from accidentally being written into the raw/archive data storage, where they could overwrite or get mixed up with raw data.
 
-**Fix:** check your `processedDataMap` / `processedDataDirPath` settings in your `startup.m` — they should point to your **processed** data drive, not your raw data (`ukonmap`) drive. See [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]].
+**Fix:** check your `processedDataMap` / `processedDataDirPath` settings in your `startup.m` — they should point to your **processed** data drive, not your raw data (`ukonmap`) drive. See [Getting Started – Installation & Toolbox Setup](./Getting-Started.md).
 
 ---
 
@@ -65,7 +65,7 @@ FEATHER refuses to save processed data into any folder path containing the word 
 
 This happens when you try to load an `anex` (or another object) with `enablecache on`, but no saved/processed version of it exists yet — usually because this is the very first time this experiment is being analysed.
 
-**Fix:** run `enablecache off` and re-create the object as shown in the relevant walkthrough (e.g. [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]] Step 1), then switch back to `enablecache on` for subsequent work.
+**Fix:** run `enablecache off` and re-create the object as shown in the relevant walkthrough (e.g. [ABR Analysis Walkthrough](./ABR-Walkthrough.md) Step 1), then switch back to `enablecache on` for subsequent work.
 
 ---
 
@@ -99,12 +99,12 @@ These errors come from `ExtractMUAfromRawDataIntoSL` while it cross-checks the N
 
 Almost every FEATHER GUI requires you to press a specific save button before closing it — usually **EXPORT** or **Done** (sometimes **Done & EXPORT**). Simply closing the window is not enough.
 
-**Fix:** see the [[GUI Reference|User-Guide-GUI-Reference]] page for the exact save button for each specific GUI, and re-do the annotation step if you closed it without saving.
+**Fix:** see the [GUI Reference](./GUI-Reference.md) page for the exact save button for each specific GUI, and re-do the annotation step if you closed it without saving.
 
 ---
 
 ## What's next
 
-- [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]]
-- [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]]
-- [[GUI Reference|User-Guide-GUI-Reference]]
+- [Getting Started – Installation & Toolbox Setup](./Getting-Started.md)
+- [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md)
+- [GUI Reference](./GUI-Reference.md)
