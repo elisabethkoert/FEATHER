@@ -17,7 +17,7 @@ Several `icme` analysis functions exist in multiple versions side-by-side, witho
 - **Spike extraction from raw Neuralynx data:** `generateSLfromRawNlxData.m`, `generateSLfromRawNlxData_BackgroundNoise.m`, `generateSLfromRawNlxData_baseline_global.m` (itself present as two near-duplicate files, one titled `... - Copy.m`), plus `evaluateDataAndSpikes.m` and `evaluateDataAndSpikes_EK.m`, which overlap significantly in purpose. The `icme.ExtractMUAfromRawDataIntoSL` method currently calls `generateSLfromRawNlxData_baseline_global`, but comments in the same file show it previously called `generateSLfromRawNlxData_BackgroundNoise`, suggesting active, recent iteration on which version is "correct."
 
 
-⚠️ **NEEDS INPUT FROM MAINTAINERS:** for each group above, please confirm which function is the current recommended one so this can be stated explicitly in [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]] and [[How to Add a New IC Experiment/Protocol Type|Developer-Guide-Adding-New-Experiment-Type]], and whether the older/duplicate versions can be deleted or should be kept for reproducing old published analyses (in which case, consider clearly marking them as archival, e.g. moving them to an explicitly named `legacy/` folder).
+⚠️ **NEEDS INPUT FROM MAINTAINERS:** for each group above, please confirm which function is the current recommended one so this can be stated explicitly in [IC Analysis Walkthrough](../User-Guide/IC-Walkthrough.md) and [How to Add a New IC Experiment/Protocol Type](./Adding-New-Experiment-Type.md), and whether the older/duplicate versions can be deleted or should be kept for reproducing old published analyses (in which case, consider clearly marking them as archival, e.g. moving them to an explicitly named `legacy/` folder).
 
 ---
 
@@ -27,7 +27,7 @@ The function's own header comment states:
 
 > `% StimModality (string): sitmulus modality ('Optical', 'Acoustic') % does not yet work for acoustic!`
 
-This is already noted in [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]] as a user-facing caveat; listed here as well so it isn't lost when this function is eventually fixed.
+This is already noted in [ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough.md) as a user-facing caveat; listed here as well so it isn't lost when this function is eventually fixed.
 
 ---
 
@@ -38,8 +38,3 @@ This helper function hardcodes a lookup from `ExpID` naming prefixes to specific
 ⚠️ **NEEDS INPUT FROM MAINTAINERS:** this will silently misattribute experiments for any new experimenter whose initials don't follow the assumed 2-character convention, or whose `ExpID` prefix isn't already listed. Please confirm whether this function is still actively relied upon (vs. `ExperimenterID` simply being passed explicitly everywhere it matters), and whether it should be updated when new lab members join.
 
 ---
-
-## What's next
-
-- [[Architecture Overview|Developer-Guide-Architecture-Overview]]
-- [[Coding Conventions|Developer-Guide-Coding-Conventions]]
