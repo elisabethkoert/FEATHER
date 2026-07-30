@@ -154,9 +154,3 @@ Run through each script's ABR/IC-relevant steps with `enablecache off`, using a 
 4. Downstream functions that depend on calibrated intensity (e.g. `intensityThreshold`, `intensityThresholdIC`) run without errors and produce plausible values.
 
 ---
-
-## What's next
-
-- [[Developer Guide Adding New Stimulus Type for IC|Developer-Guide-Adding-New-Experiment-Type]]
-- [[How to Add a New GUI Input Field|Developer-Guide-Adding-GUI-Field]]
-- [[Coding Conventions|Developer-Guide-Coding-Conventions]]
