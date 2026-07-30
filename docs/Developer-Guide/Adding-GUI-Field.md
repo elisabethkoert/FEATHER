@@ -84,6 +84,6 @@ Once your field is working end-to-end, add a row for it to the relevant GUI's ta
 
 ## What's next
 
-- [[GUI Reference|User-Guide-GUI-Reference]]
-- [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]]
-- [[Coding Conventions|Developer-Guide-Coding-Conventions]]
+- [GUI Reference](./|User-Guide/GUI-Reference.md)
+- [How to Add Support for New Laser/Stimulus Hardware](./Developer-Guide/Adding-New-Hardware.md)
+- [Coding Conventions](./Developer-Guide/Coding-Conventions.md)
