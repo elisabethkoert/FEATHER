@@ -4,7 +4,7 @@ This page walks you through analysing cochlear histology data for one animal exp
 
 - **Confocal histology** (40x objective, Arivis-based "Nintendo" analysis pipeline) — represented by `histimg` objects. This pipeline is complete and ready to use.
 
-It assumes you have already completed [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]] and read [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]], and that you already have an `anex` for your animal (usually created during ABR analysis — see [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]).
+It assumes you have already completed [Getting Started – Installation & Toolbox Setup](./Getting-Started.md) and read [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md), and that you already have an `anex` for your animal (usually created during ABR analysis — see [ABR Analysis Walkthrough](./ABR-Walkthrough.md)).
 
 ---
 
@@ -26,7 +26,7 @@ You will need:
 
 - An existing `anex` for your animal.
 - The **raw data folder path** containing the `.csv` result files exported from the confocal/Arivis ("Nintendo") analysis pipeline.
-- Filenames of these `.csv` files must include the experiment ID (or the animal number) so FEATHER can associate them with the right animal — see the [[GUI Reference|User-Guide-GUI-Reference]] page and the developer-level `histimg` documentation for the exact naming convention if you run into matching problems.
+- Filenames of these `.csv` files must include the experiment ID (or the animal number) so FEATHER can associate them with the right animal — see the [GUI Reference](./GUI-Reference.md) page and the developer-level `histimg` documentation for the exact naming convention if you run into matching problems.
 
 ### Step 1: Load your `anex` and register the histology raw data folder
 
@@ -86,7 +86,7 @@ HistImgs = listHistImg(ee);
 chooseHistImgToUse(ee)
 ```
 
-This opens the **`chooseHistImgToUse`** GUI (see [[GUI Reference|User-Guide-GUI-Reference]]). Mark any image you do **not** want included in further analysis with `-1` in the **Use** column. The **Prefill** button automatically selects the most recently taken image per side/turn as a starting point. Press **Done** when finished.
+This opens the **`chooseHistImgToUse`** GUI (see [GUI Reference](./GUI-Reference.md)). Mark any image you do **not** want included in further analysis with `-1` in the **Use** column. The **Prefill** button automatically selects the most recently taken image per side/turn as a starting point. Press **Done** when finished.
 
 ### Step 4: Get the summarized results for this animal
 
@@ -104,6 +104,6 @@ HistoRes = getHistoResults(ee);
 
 ## What's next
 
-- [[GUI Reference|User-Guide-GUI-Reference]] for detailed button-by-button GUI instructions
-- [[FAQ / Troubleshooting|User-Guide-FAQ]] if something goes wrong
-- Developer Guide: [[Known Limitations / Stub Classes|Developer-Guide-Known-Limitations]] for other early-stage parts of the toolbox
+- [GUI Reference](./GUI-Reference.md) for detailed button-by-button GUI instructions
+- [FAQ / Troubleshooting](./FAQ.md) if something goes wrong
+- Developer Guide: [Known Limitations / Stub Classes](../Developer-Guide/Known-Limitations.md) for other early-stage parts of the toolbox
