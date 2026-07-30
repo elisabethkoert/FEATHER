@@ -6,7 +6,7 @@ title: Git Workflow & Testing Before Merging
 This page explains **how changes to FEATHER should be made and verified** before
 they become part of the toolbox everyone uses (the `main` branch).
 
-If you haven't yet read **[[Getting Started with Git|User-Guide-Git-Basics]]**,
+If you haven't yet read **[Getting Started with Git](../User-Guide/Git-Basics.md)**,
 do that first — this page assumes you already know how to clone the repo and
 do a basic `git pull`.
 
@@ -131,7 +131,7 @@ results = runAllAutomatedTests;
 
 Full details, including how to investigate a specific failure and how
 golden baselines work, are in the
-**[[Automated Testing Guide|Home/Developer-Guide/Automated-Testing-Guide]]**.
+**[Automated Testing Guide](../Developer-Guide/Automated-Testing-Guide.md)**.
 
 ### 2. Run the relevant `exampleScripts/` file(s)
 
@@ -167,20 +167,20 @@ the following, and update accordingly:
 |---|---|
 | Any `@ClassName/` folder's behavior, properties, or file conventions | that class's `README.md` (see `@icme/README.md` or `@histimg/README.md` for the expected structure/tone) |
 | Anything about calibration file formats or naming conventions | the "Calibration Files" section of the relevant class README |
-| A GUI (`.mlapp`) — added/changed a field, button, or workflow step | [[GUI Reference\|Home/User-Guide/GUI-Reference]] and, if the GUI has its own detailed walkthrough, `GUI/readme.md` |
-| The overall class hierarchy or added a brand-new class | [[Architecture Overview\|Home/Developer-Guide/Architecture-Overview]]|
-| A naming convention, the caching pattern, or a core safety check |[[Coding Conventions\|Home/Developer-Guide/Coding-Conventions]] |
+| A GUI (`.mlapp`) — added/changed a field, button, or workflow step | [GUI Reference](../User-Guide/GUI-Reference.md) and, if the GUI has its own detailed walkthrough, `GUI/readme.md` |
+| The overall class hierarchy or added a brand-new class | [Architecture Overview](../Developer-Guide/Architecture-Overview.md)|
+| A naming convention, the caching pattern, or a core safety check |[Coding Conventions](../Developer-Guide/Coding-Conventions.md) |
 | Anything a routine user would need to know to run their analysis | the relevant **User Guide** walkthrough page |
-| The automated test suite itself (new registry entries, new pipeline steps, new golden baselines) | [[Automated Testing Guide\|Home/Developer-Guide/Automated-Testing-Guide]], and `automated/PENDING_TEST_COVERAGE.md` if you closed or added a known gap |
+| The automated test suite itself (new registry entries, new pipeline steps, new golden baselines) | [Automated Testing Guide](../Developer-Guide/Automated-Testing-Guide.md), and `automated/PENDING_TEST_COVERAGE.md` if you closed or added a known gap |
 
 **If you added a brand-new wiki page** (e.g. documenting a new developer
 task, following the pattern of this page or
-[[Adding a new experimental data type object|Home/Developer-Guide/How-to-add-a-new-experimental-data-type-as-a-new-object-class]]),
+[Adding a new experimental data type object](../Developer-Guide/How-to-add-a-new-experimental-data-type-as-a-new-object-class.md),
 make sure to also:
 
-- Add a link to it from the **[[Developer Guide|Home/Developer-Guide]]**
-  landing page (or **[[User Guide|Home/User-Guide]]**, if user-facing)
-- Add it to the **[[Home|Home]]** page's navigation list
+- Add a link to it from the **[Developer Guide](../Developer-Guide.md)**
+  landing page (or **[User Guide](../User-Guide.md)**, if user-facing)
+- Add it to the **[Home](../Home.md)** page's navigation list
 - Cross-link it from any closely related existing pages (See Also sections)
 
 A wiki page that exists but isn't linked from anywhere is effectively
@@ -204,8 +204,8 @@ Copy this into your Merge Request description and check off each item:
       and generated its golden baseline
 - [ ] Ran the relevant `exampleScripts/` file(s), including GUI steps,
       for the part of the toolbox I changed
-- [ ] Updated any affected README.md/wiki page(s) — see
-      [[Keeping the Documentation in Sync|#-keeping-the-documentation-in-sync]]
+- [ ] Updated any affected README.md/wiki page(s) — (see
+     **Keeping the Documentation in Sync**)
       above — and linked any new page from Home/Developer Guide navigation
 - [ ] Requested review from at least one other developer (for changes to
       shared/core functions)
