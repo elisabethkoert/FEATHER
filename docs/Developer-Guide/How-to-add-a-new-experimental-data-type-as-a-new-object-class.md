@@ -11,7 +11,7 @@ to add a **new** class following that same pattern.
 > of data (e.g. a new physiological signal such as DPOAEs, or a new imaging modality) that
 > doesn't fit into any existing class. If you just need to support a new **stimulus
 > hardware** (e.g. a new laser) within an *existing* class like `berabr` or `icme`,
-> see the separate page **[[Adding New Hardware|Home/Developer-Guide/Adding-New-Hardware]]** instead.
+> see the separate page **[Adding New Hardware](../Developer-Guide/Adding-New-Hardware.md)** instead.
 
 We'll use **DPOAE** (Distortion Product Otoacoustic Emission) recording
 class as a running worked example since it is something recorded in the lab but not yet in FEATHER
@@ -450,6 +450,6 @@ we recommend literally diffing your new class's file list against
 
 ## See Also
 
-- [[Architecture Overview|Home/Developer-Guide/Architecture-Overview]]
-- [[Adding New Hardware|Home/Developer-Guide/Adding-New-Hardware]]
-- [[Coding Conventions|Home/Developer-Guide/Coding-Conventions]]
+- [Architecture Overview](../Developer-Guide/Architecture-Overview.md)
+- [Adding New Hardware](../Developer-Guide/Adding-New-Hardware.md)
+- [Coding Conventions](../Developer-Guide/Coding-Conventions.md)
