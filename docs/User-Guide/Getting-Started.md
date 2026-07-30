@@ -3,7 +3,7 @@ title: Getting Started
 ---
 # Getting Started: Installation & Toolbox Setup
 
-This page walks you through getting FEATHER running on your computer for the first time. It assumes you have already followed [[Getting Started with Git|User-Guide-Git-Basics]] and have a local copy of the `invivoEphysFEATHER` repository on your computer.
+This page walks you through getting FEATHER running on your computer for the first time. It assumes you have already followed [Getting Started with Git](./Git-Basics.md) and have a local copy of the `invivoEphysFEATHER` repository on your computer.
 
 ---
 
@@ -11,7 +11,7 @@ This page walks you through getting FEATHER running on your computer for the fir
 
 - **MATLAB** installed on your computer. The toolbox has been tested on MATLAB 2021a/b and 2022a/b but should also work with newer versions. 
 - Access to the network drives where **raw data** and **processed data** are stored (for IAN members, this is the `UKON100` drive — ask a labmate or supervisor for access if you don't have it yet).
-- A local clone of the FEATHER repository (see [[Getting Started with Git|User-Guide-Git-Basics]]).
+- A local clone of the FEATHER repository (see [Getting Started with Git](./Git-Basics.md)).
 - If you will be analysing IC (inferior colliculus) recordings: the Neuralynx MATLAB import tools (`Nlx2MatCSC`, `Nlx2MatEV`). A compatible version is bundled in `FEATHER/cheetah/` and should already be on your path once you add the toolbox as described below. In that case you also need a computer with at least 32 GB RAM otherwise you will run into memory issues when extracting multi-unit spikes from raw data for recordings that are longer than 10 min. 
 
 ---
@@ -33,7 +33,7 @@ This script adds the toolbox to your MATLAB path and configures where FEATHER sh
    - your initials (`userID`).
 3. Run this script at the start of every MATLAB session where you want to use FEATHER.
 
-The script also sets `enablecache('on')`. Leave this as `'on'` for normal day-to-day use. See [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]] for what this setting actually does before changing it.
+The script also sets `enablecache('on')`. Leave this as `'on'` for normal day-to-day use. See [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md) for what this setting actually does before changing it.
 
 ### Running entirely on your own computer (no network drive)
 
