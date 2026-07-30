@@ -8,7 +8,7 @@ function [fig,PSTH_norm,PSTH,bin_centers,resp_idx,t_onset,t_offset,peak_response
     % spikerate is more than 2x std of the baseline mean 
     % (baseline currently calculated form the last 10 ms of the stimulation
     % window) The offset has to be at least 2 ms after the onset to avoid
-% detecting noise in the stimulus onset.
+    % detecting noise in the stimulus onset.
     % Icmes marked as -1 in the user input table as well as recordings from
     % the apex or midturn are excluded, for those use the icme/calulatePSTH
     % function after first creating a list with all desired icmes
