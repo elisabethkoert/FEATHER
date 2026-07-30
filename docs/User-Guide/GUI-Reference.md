@@ -16,7 +16,7 @@ This page documents every GUI (App Designer app) that ships with FEATHER, what e
 
 This GUI allows exploration of all available ABR recordings for one animal.
 
-![exploreBerabr](uploads/4e83f0e10f5d283c66acea1103da6c00/exploreBerabr.png){width=232 height=222}
+![exploreBerabr](../images/exploreBerabr.png)
 - The **top-left** shows the **ExpID**.
 - The **bottom-left** lists all available `berabr` objects with their **SeriesID**.
 - Select a specific ABR recording from this list to inspect it.
@@ -32,7 +32,7 @@ This GUI allows exploration of all available ABR recordings for one animal.
 
 This GUI is used to identify the peaks of recorded ABR waves.
 
-![berabrWaveGUI2](uploads/fedba7fa7e32ef8922f5fda876519a02/berabrWaveGUI2.png){width=594 height=600}
+![berabrWaveGUI2](../images/berabrWaveGUI2.png)
 - **Area (1), top-left:** all available waves are plotted, including ExpID, ABR SeriesID, recording type (`aABR` acoustic or `oABR` optical), and additional stimulus information.
 
   ⚠️ Keep in mind that laser intensity values shown here are often **not yet calibrated** — they may show laser drive % rather than actual mW values, despite being labeled "mW".
@@ -62,9 +62,9 @@ This GUI is used to identify the peaks of recorded ABR waves.
 
 ## `userberabrOD`
 
-This GUI allows entering user input that cannot be read automatically from BERA raw data files — most importantly, which optical density filter (or equivalent hardware setting) was applied for each recording. This information must match the naming convention used in the calibration files (see [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]) so FEATHER can find the right calibration data.
+This GUI allows entering user input that cannot be read automatically from BERA raw data files — most importantly, which optical density filter (or equivalent hardware setting) was applied for each recording. This information must match the naming convention used in the calibration files (see [ABR Analysis Walkthrough](./ABR-Walkthrough.md)) so FEATHER can find the right calibration data.
 
-![userberabrOD](uploads/71697c7b921e25fdfb044131713cc1d9/userberabrOD.png){width=419 height=183}
+![userberabrOD](../images/userberabrOD.png)
 
 - **First column:** the `berabr` SeriesID.
 - **ftOD column:** manually enter the inserted optical density filter (e.g. for OBIS 594 nm lasers) or the current/voltage setting used in the BERA `.ini` file to change the laser intensity range (e.g. for the green lasers).
@@ -78,7 +78,7 @@ This GUI allows entering user input that cannot be read automatically from BERA 
 
 This GUI allows entering user input for IC recordings that FEATHER cannot read automatically from the raw data.
 
-![ICuserInput](uploads/13b70cbc4780fbb1ee89a3b84b6522d4/ICuserInput.png){width=788 height=289}
+![ICuserInput](../images/ICuserInput.png)
 
 The columns most important for the majority of `icme` analysis functions are:
 
@@ -113,7 +113,7 @@ In the top row, you can also specify whether the experimental metadata already c
 
 This GUI lets you mark whether any available histology images should be excluded from further analysis.
 
-![chooseHistImgToUse](uploads/8e68e688b61f8e8bb8d0fde79bbc918b/chooseHistImgToUse.png){width=481 height=384}
+![chooseHistImgToUse](../images/chooseHistImgToUse.png)
 
 - Mark any image you do **not** want included in further analysis with `-1` in the **Use** column.
 - **Prefill** automatically selects the most recently taken image per cochlea side/position as a starting point.
@@ -124,7 +124,7 @@ This GUI lets you mark whether any available histology images should be excluded
 
 ## What's next
 
-- [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]
-- [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]]
-- [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]
-- [[FAQ / Troubleshooting|User-Guide-FAQ]]
+- [ABR Analysis Walkthrough](./ABR-Walkthrough.md)
+- [IC Analysis Walkthrough](./IC-Walkthrough.md)
+- [Histology Analysis Walkthrough](./Histology-Walkthrough.md)
+- [FAQ / Troubleshooting](./FAQ.md)
