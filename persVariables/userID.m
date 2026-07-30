@@ -1,7 +1,6 @@
 function E = userID(flag)
 % userID - the initials of the user. 
-%   AV: Anna vavakou
-%   TH: Tori Hunninford
+%   eg. AV: Anna vavakou
 %   The cache state is remembered (using a global variable) during the
 %   current matlab session, but not across sessions.
 

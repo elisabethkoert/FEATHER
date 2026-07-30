@@ -1,5 +1,5 @@
 function headerInfo = parseNLXHeaderInfo(header)
-    % Parse Neuralynx header information 
+    % Parse Neuralynx header information  
     
     % ADBitVolts
     strToFind = '-ADBitVolts';

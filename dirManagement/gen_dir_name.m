@@ -1,6 +1,6 @@
 function D = gen_dir_name (Din)
 % gen_dir_name - concatinates the mapped ukon drive letter with the
-% directory string array.
+% directory string array. 
 % input:
 % Din (1×n string array): name of the folders along the path
 % output:
