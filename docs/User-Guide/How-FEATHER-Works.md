@@ -2,7 +2,7 @@
 
 This page explains the core ideas behind FEATHER in plain language, with no coding background assumed. Understanding this before you start the ABR/IC/Histology walkthroughs will save you a lot of confusion later — most error messages and unexpected behavior make sense once you understand these few concepts.
 
-If you want the full technical version of this page (class names, properties, file formats), see the Developer Guide's [[Architecture Overview|Developer-Guide-Architecture-Overview]]. This also helps you to understand what is saved where so it is advisable to read through it once.
+If you want the full technical version of this page (class names, properties, file formats), see the Developer Guide's [Architecture Overview](../Developer-Guide/Architecture-Overview.md). This also helps you to understand what is saved where so it is advisable to read through it once.
 
 ---
 
@@ -60,7 +60,7 @@ enablecache on    % now just reload/reuse existing results
 
 ## Where your results actually get saved
 
-Every user has their own results folder, so that multiple people can analyse the same animal without overwriting each other's work. FEATHER builds this location automatically from three pieces of information that get set once per MATLAB session (in your `startup.m`, see [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]]):
+Every user has their own results folder, so that multiple people can analyse the same animal without overwriting each other's work. FEATHER builds this location automatically from three pieces of information that get set once per MATLAB session (in your `startup.m`, see [Getting Started – Installation & Toolbox Setup](./Getting-Started.md)):
 
 - **who is running the analysis** (your initials/user ID),
 - **who performed the animal experiment** (the experimenter's initials),
@@ -68,7 +68,7 @@ Every user has their own results folder, so that multiple people can analyse the
 
 In practice, this means: if you and a labmate both analyse the same animal, you will each get your own separate results folder, and neither of you can accidentally overwrite the other's saved results.
 
-You generally don't need to think about the exact folder path during normal analysis — FEATHER manages it for you once your `startup.m` is configured correctly. If you're curious about the exact folder structure, see the Developer Guide's [[Architecture Overview|Developer-Guide-Architecture-Overview]].
+You generally don't need to think about the exact folder path during normal analysis — FEATHER manages it for you once your `startup.m` is configured correctly. If you're curious about the exact folder structure, see the Developer Guide's [Architecture Overview](../Developer-Guide/Architecture-Overview.md).
 
 ---
 
@@ -83,7 +83,7 @@ A typical FEATHER session for an animal looks roughly like this, regardless of w
 5. **Run the analysis functions** you need (thresholds, spike rates, density calculations, etc.), with caching on so repeated calls don't recompute unnecessarily.
 6. **Plot or export results.**
 
-Each data-type walkthrough ([[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]], [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]], [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]) follows exactly this pattern with concrete commands and screenshots.
+Each data-type walkthrough ([ABR Analysis Walkthrough](./ABR-Walkthrough.md), [IC Analysis Walkthrough](./IC-Walkthrough.md), [Histology Analysis Walkthrough](./Histology-Walkthrough.md)) follows exactly this pattern with concrete commands and screenshots.
 
 ---
 
@@ -91,8 +91,8 @@ Each data-type walkthrough ([[ABR Analysis Walkthrough|User-Guide-ABR-Walkthroug
 
 Continue to whichever walkthrough matches the data you have:
 
-- [[ABR Analysis Walkthrough|User-Guide-ABR-Walkthrough]]
-- [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]]
-- [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]
+- [ABR Analysis Walkthrough](./ABR-Walkthrough.md)
+- [IC Analysis Walkthrough](./IC-Walkthrough.md)
+- [Histology Analysis Walkthrough](./Histology-Walkthrough.md)
 
-Or, if you'd like the full technical breakdown of the classes described here, see the Developer Guide's [[Architecture Overview|Developer-Guide-Architecture-Overview]].
+Or, if you'd like the full technical breakdown of the classes described here, see the Developer Guide's [Architecture Overview](../Developer-Guide/Architecture-Overview.md).
