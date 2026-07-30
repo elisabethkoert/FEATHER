@@ -2,7 +2,7 @@
 
 This page describes the class hierarchy, data flow, and file/folder conventions underlying FEATHER, for developers who need to extend or maintain the toolbox. It assumes you're comfortable reading MATLAB `classdef` files.
 
-If you're looking for a plain-language, non-technical introduction instead, see the User Guide's [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]] page — it covers the same concepts with no code.
+If you're looking for a plain-language, non-technical introduction instead, see the User Guide's [How FEATHER Works (Big Picture)](./User-Guide/How-FEATHER-Works.md) page — it covers the same concepts with no code.
 
 Much of this page is adapted from the toolbox's main `README.md`; refer back to that file in the repository root for the canonical version.
 
@@ -35,7 +35,7 @@ At this level, FEATHER enables: listing available ABR/IC/histology datasets, lau
 
 ### `berabr` — Auditory Brainstem Response object
 
-Represents one ABR measurement recorded with the BERA custom MATLAB software. See [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]] for how `berabr.Stim` gets populated per-hardware-type.
+Represents one ABR measurement recorded with the BERA custom MATLAB software. See [How to Add Support for New Laser/Stimulus Hardware](./Developer-Guide/Adding-New-Hardware.md) for how `berabr.Stim` gets populated per-hardware-type.
 
 | Property | Description |
 |---|---|
@@ -151,10 +151,3 @@ f_<ExpID>/
 `testSafeDir` is invoked before most save operations to guarantee that none of the above ever gets written into a path containing `archiv` (the raw-data domain).
 
 ---
-
-## What's next
-
-- [[Coding Conventions|Developer-Guide-Coding-Conventions]]
-- [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]]
-- [[Developer Guide Adding New Stimulus Type for IC|Developer-Guide-Adding-New-Experiment-Type]]
-- [[Known Limitations / Stub Classes|Developer-Guide-Known-Limitations]]
