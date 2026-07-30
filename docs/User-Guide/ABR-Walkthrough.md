@@ -3,7 +3,7 @@ title: ABR Walkthrough
 ---
 # ABR Analysis Walkthrough
 
-This page walks you through analysing Auditory Brainstem Response (ABR) recordings for one animal experiment, from raw data to thresholds and peak amplitudes. It assumes you have already completed [[Getting Started – Installation & Toolbox Setup|User-Guide-Getting-Started]] and read [[How FEATHER Works (Big Picture)|User-Guide-How-FEATHER-Works]].
+This page walks you through analysing Auditory Brainstem Response (ABR) recordings for one animal experiment, from raw data to thresholds and peak amplitudes. It assumes you have already completed [Getting Started – Installation & Toolbox Setup](./Getting-Started.md) and read [How FEATHER Works (Big Picture)](./How-FEATHER-Works.md).
 
 A full working example of everything on this page is available in the toolbox at:
 
@@ -83,7 +83,7 @@ This opens **`exploreBerabr`**, which lists all ABR recordings for this animal. 
 
 ⚠️ You must press the green **Accept** button after annotating each trace, and the **EXPORT** button when you are done, or your annotations will not be saved.
 
-Full button-by-button instructions for both GUIs are in the [[GUI Reference|User-Guide-GUI-Reference]] page — read that page in full before doing this step for the first time.
+Full button-by-button instructions for both GUIs are in the [GUI Reference](./GUI-Reference.md) page — read that page in full before doing this step for the first time.
 
 ---
 
@@ -95,7 +95,7 @@ Calibration later on depends on knowing which optical density filter and which s
 userberabrOD(ee)
 ```
 
-This opens the **`userberabrOD`** GUI (see [[GUI Reference|User-Guide-GUI-Reference]]). For each `berabr`, fill in the applied optical density filter (or current setting, depending on hardware) and, if there are multiple lasers of the same type in use, enough additional detail (e.g. serial number or COM port) to tell them apart. Press **EXPORT** when done.
+This opens the **`userberabrOD`** GUI (see [GUI Reference](./GUI-Reference.md)). For each `berabr`, fill in the applied optical density filter (or current setting, depending on hardware) and, if there are multiple lasers of the same type in use, enough additional detail (e.g. serial number or COM port) to tell them apart. Press **EXPORT** when done.
 
 For **acoustic-only** recordings, this step is not required — no calibration file is needed since the stimulation software already outputs calibrated dB SPL values.
 
@@ -145,7 +145,7 @@ Once everything above has been run once, you can revisit results quickly with ca
 
 ## Supported stimulus hardware
 
-The following hardware types are automatically recognised by FEATHER for ABR recordings. If your recording used something not on this list, see the Developer Guide's [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]] page (or ask a developer to add it).
+The following hardware types are automatically recognised by FEATHER for ABR recordings. If your recording used something not on this list, see the Developer Guide's [How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware.md) page (or ask a developer to add it).
 
 | Hardware (`Speaker` field) | Modality |
 |---|---|
@@ -164,7 +164,7 @@ The following hardware types are automatically recognised by FEATHER for ABR rec
 
 ## What's next
 
-- [[IC Analysis Walkthrough|User-Guide-IC-Walkthrough]]
-- [[Histology Analysis Walkthrough|User-Guide-Histology-Walkthrough]]
-- [[GUI Reference|User-Guide-GUI-Reference]] for detailed button-by-button GUI instructions
-- [[FAQ / Troubleshooting|User-Guide-FAQ]] if something goes wrong
+- [IC Analysis Walkthrough](./IC-Walkthrough.md)
+- [Histology Analysis Walkthrough](./Histology-Walkthrough.md)
+- [GUI Reference](./GUI-Reference.md) for detailed button-by-button GUI instructions
+- [FAQ / Troubleshooting](./FAQ.md) if something goes wrong
