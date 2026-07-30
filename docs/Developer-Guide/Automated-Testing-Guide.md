@@ -1,12 +1,9 @@
-﻿---
-title: Automated Testing Guide
----
 # Automated Testing Guide
 
 This page documents FEATHER's automated regression-test suite, located at
 `TestingScriptsForFeather/automated/`that run without requiring a human to manually step through a script.
 
-See **[[Git Workflow & Testing Before Merging|Home/Developer-Guide/Git-Workflow-&-Testing-Before-Merging]]**
+See **[Git Workflow & Testing Before Merging](../Developer-Guide/Git-Workflow-&-Testing-Before-Merging.md)**
 for the full pre-merge checklist, which now centers on running this suite
 (this page only covers the manual GUI-driven checks that this automated
 suite intentionally does not replace, since GUI interaction and visual
@@ -15,7 +12,7 @@ plot output can't be judged by an automated pass/fail check).
 Running the automated tests, especially for the IC analysis is not fast, so if you have not changed anything in there it may make sense to adapt the TestExperimentRegistry.m to include less experiments for just one general test if you have not actively worked on the IC pipeline.
 
 > 📌 If you're looking for how to run analysis on your own data, this page
-> is not for you — see the **[[User Guide|User-Guide]]** instead. This page
+> is not for you — see the **[User Guide](../User-Guide.md)** instead. This page
 > is for developers verifying that a code change hasn't broken anything.
 
 ---
@@ -103,7 +100,7 @@ below for the recommended debugging pattern.
 ### Prerequisites
 
 - Your usual FEATHER session setup (`ukonmap`, `processedDataMap`, toolbox
-  on path) — see **[[Getting Started|User-Guide-Getting-Started]]**.
+  on path) — see **[Getting Started](../User-Guide/Getting-Started.md)**.
 - Access to the shared raw-data drive containing `AllDataTypesForAnalysisTests/`.
 - `TestExperimentRegistry.m` and `ICRoleRegistry.m` reviewed/updated for
   any new experiments you want covered (see below).
@@ -275,12 +272,3 @@ If you pick up any of these, remove the corresponding entry from
 `test_*.m` file.
 
 ---
-
-## See Also
-
-- [[Git Workflow & Testing Before Merging|Home/Developer-Guide/Git-Workflow-&-Testing-Before-Merging]] — the manual pre-merge checklist this suite complements
-- [[Architecture Overview|Home/Developer-Guide/Architecture-Overview]]
-- [[Coding Conventions|Home/Developer-Guide/Coding-Conventions]]
-
-⬅ [[Back to Developer Guide|Home/Developer-Guide]]
-```
