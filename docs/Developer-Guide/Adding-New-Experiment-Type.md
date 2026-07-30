@@ -124,9 +124,3 @@ If you're writing an analysis that only makes sense for your new protocol type, 
 5. Any generic or bespoke analysis functions run without errors and produce plausible results.
 
 ---
-
-## What's next
-
-- [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]]
-- [[How to Add a New GUI Input Field|Developer-Guide-Adding-GUI-Field]]
-- [[Coding Conventions|Developer-Guide-Coding-Conventions]]
