@@ -108,7 +108,7 @@ end
 
 New sub-object types should follow the same folder convention as existing ones:
 
-- Each modality gets its own subfolder under the experiment's processed-data folder if it produces more than a handful of files (see `HISTO/`, `ICME/` in [[Architecture Overview|Developer-Guide-Architecture-Overview]]).
+- Each modality gets its own subfolder under the experiment's processed-data folder if it produces more than a handful of files (see `HISTO/`, `ICME/` in [Architecture Overview](./Architecture-Overview]]´´.md).
 - Use an `init<Modality>Folder(ee)` function (see `initHistoFolder`, `initIcmeFolder`, `initLightSheetHistoFolder`) to create this subfolder on first use, guarded by `testSafeDir` and a check for whether the folder already exists (warn rather than silently overwrite).
 - Cached list-of-recordings files follow the `List_<Modality>[_raw].mat` naming pattern (see `listBerabr`, `listIcme`, `listHistImg`, and their `*Raw` counterparts) — reuse this pattern for new modalities rather than inventing a new listing convention.
 
@@ -132,10 +132,3 @@ function out = myFunction(obj, param1, param2)
 New functions should follow this shape: a `ClassName\functionName` prefix on the first comment line, then `input:`/`output:` sections listing each parameter with its expected type in parentheses. This isn't enforced by any linter, but it's the dominant style and keeps `help functionName` useful.
 
 ---
-
-## What's next
-
-- [[Architecture Overview|Developer-Guide-Architecture-Overview]]
-- [[How to Add Support for New Laser/Stimulus Hardware|Developer-Guide-Adding-New-Hardware]]
-- [[Developer Guide Adding New Stimulus Type for IC|Developer-Guide-Adding-New-Experiment-Type]]
-- [[How to Add a New GUI Input Field|Developer-Guide-Adding-GUI-Field]]
