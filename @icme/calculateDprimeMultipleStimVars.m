@@ -70,6 +70,11 @@ function [all_d_prime_results] = calculateDprimeMultipleStimVars(obj ,mode,stim_
         stim_ID = stim_ID(ismember(stim_ID, stim_ID_2));
     end
 
+    if isempty(stim_ID)
+        all_d_prime_results=[];
+        return
+    end
+
     fixedStimStimList_ix=stim_criteria_array(2,1);%freq
     changing_var_ix=stim_criteria_array(1,1);%SPL dB
     
