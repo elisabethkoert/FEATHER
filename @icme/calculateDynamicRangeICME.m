@@ -145,8 +145,10 @@ function [fig, dynamic_range,all_stimuli, all_stimuli_dB_logScale, all_spike_rat
    % measures DR as 10 percent to 90 perc of this absolute eSR
    eSR_change_max_elec=max(max(all_evoked_spike_rates,[],1))-min(max(all_evoked_spike_rates,[],1));
    value_90_per_max_eSR_abs=min(max(all_evoked_spike_rates,[],1))+0.9*eSR_change_max_elec;
+   value_100_per_max_eSR_abs=min(max(all_evoked_spike_rates,[],1))+eSR_change_max_elec;
    value_10_per_max_eSR_abs=min(max(all_evoked_spike_rates,[],1))+0.1*eSR_change_max_elec;
    [~,ix_90_per_max_eSR_abs]=min(abs(max(all_evoked_spike_rates,[],1)-value_90_per_max_eSR_abs));
+   [~,ix_100_per_max_eSR_abs]=min(abs(max(all_evoked_spike_rates,[],1)-value_100_per_max_eSR_abs));
    [~,ix_10_per_max_eSR_abs]=min(abs(max(all_evoked_spike_rates,[],1)-value_10_per_max_eSR_abs));
    if ix_10_per_max_eSR_abs==1
        ix_10_per_max_eSR_abs=2; % if the very first with 0 mW is the closest to +10 % this will cause problems in the log scale
@@ -181,7 +183,9 @@ function [fig, dynamic_range,all_stimuli, all_stimuli_dB_logScale, all_spike_rat
    % SR taken from max electrode per intensity
    dynamic_range.eSR_10perc_to_90_perc_dB_logScale_absolute=all_stimuli_dB_logScale(ix_90_per_max_eSR_abs)-all_stimuli_dB_logScale(ix_10_per_max_eSR_abs);
    dynamic_range.eSR_10perc_to_90_perc_absolute=all_stimuli(ix_90_per_max_eSR_abs)-all_stimuli(ix_10_per_max_eSR_abs);
-
+   % eSR 10 to 100 %, sensitivity analysis
+   dynamic_range.eSR_10perc_to_100_perc_dB_logScale_absolute=all_stimuli_dB_logScale(ix_100_per_max_eSR_abs)-all_stimuli_dB_logScale(ix_10_per_max_eSR_abs);
+   dynamic_range.eSR_10perc_to_100_perc_absolute=all_stimuli(ix_100_per_max_eSR_abs)-all_stimuli(ix_10_per_max_eSR_abs);
 
     %% plot figure
     if plot_bool==1
