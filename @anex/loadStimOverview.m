@@ -12,5 +12,9 @@ function [stim_list_all]=loadStimOverview(ee, ExpType)
 % characteristics.
 save_name_stimlist = strcat("Stimlist_Overview_",ee.ExpID,"_",ExpType,".mat");
 overviewtab_singleNB=fullfile(expProcDataDir,'ICME','Overviews',save_name_stimlist);
-load(overviewtab_singleNB,'stim_list_all');
+if ~isfile(overviewtab_singleNB)
+    [stim_list_all]=create_overview(ee,{ExpType});
+else
+    load(overviewtab_singleNB,'stim_list_all');
+end
 end
