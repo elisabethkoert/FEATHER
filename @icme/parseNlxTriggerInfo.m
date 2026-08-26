@@ -56,6 +56,12 @@ num_of_trials = length(TrialIDs);
 names_applied_stimuli = unique(StimListID);
 num_applied_stimuli = numel(names_applied_stimuli);
 
+% These two checks guard against being handed an ICME whose stimuli are not the
+% ones in the event file. That happens for ICMEs derived from another recording:
+% getICinterfromPulseMode splits a recording per channel and ctc_icme merges two,
+% and both keep the parent's RawDataFolder, so the .nev file is found and parsed
+% but describes the wrong stimulus set. Build the Trigger of a derived ICME by
+% subsetting or merging the parent's instead of re-parsing the raw data.
 if num_applied_stimuli ~= size(IC.Stim.stimlist,1)
     error('parseNlxTriggerInfo: num of found stimuli in raw data not same as IC.Stim.stimlist for %s', IC.SeriesID)
 end

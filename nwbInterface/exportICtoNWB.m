@@ -59,6 +59,7 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
     u_electrodeRow  = [];   % 0-based row index into combinedElecTable
     u_recordingID   = {};   % cellstr, one per row
     u_stimID        = [];   % 1-based row into that recording's stimlist table
+    u_apRow         = [];   % 0-based row into the analysis-parameters table
 
     % --- ragged-column accumulators (cell per row; flattened at the end) ---
     u_spikeTimes_ss   = {}; % session-relative seconds
@@ -150,24 +151,55 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
         
         icModule.dynamictable.set(sprintf('%s_stimlist', safeName), icStimTable);
 
-        % --- Analysis Parameters Row ---
+        % --- Analysis Parameters Row(s) ---
+        % A concatenated ICME (ctc_icme) carries one analysis_parameters entry
+        % per source recording. All settings agree between the sources except
+        % waveform_threshold_low, which is per electrode and specific to each
+        % source's extraction, so one row is written per entry and every Units
+        % row points at the one that applies to its spikes.
         ap = IC.SL.analysis_parameters;
-        ap_recordingID{end+1,1}    = char(SeriesID);%#ok<AGROW>
-        ap_expType{end+1,1}        = char(IC.Stim.exp_type);%#ok<AGROW>
-        ap_threshold(end+1,1)      = ap.threshold;%#ok<AGROW>
-        ap_preTime(end+1,1)        = ap.pre_time;%#ok<AGROW>
-        ap_postTime(end+1,1)       = ap.post_time;%#ok<AGROW>
-        ap_refTime(end+1,1)        = ap.ref_time;%#ok<AGROW>
-        ap_lowFilt(end+1,1)        = ap.low_filt;%#ok<AGROW>
-        ap_highFilt(end+1,1)       = ap.high_filt;%#ok<AGROW>
-        ap_filtOrd(end+1,1)        = ap.filt_ord;%#ok<AGROW>
-        ap_preStimRecTime(end+1,1) = ap.prestimrectime;%#ok<AGROW>
-        ap_postStimRecTime(end+1,1)= ap.poststimrectime;%#ok<AGROW>
-        ap_artefactRemoval(end+1,1)= double(ap.use_artefact_removal);%#ok<AGROW>
-        ap_MUEdate{end+1,1}        = char(string(ap.MUEdate));%#ok<AGROW>
-        ap_GitHash{end+1,1}        = char(ap.GitHash);%#ok<AGROW>
-        ap_GitBranch{end+1,1}      = char(ap.GitBranch);%#ok<AGROW>
-        ap_waveThreshLow(end+1,:)  = ap.waveform_threshold_low(:)';%#ok<AGROW>
+        apRowOfSource = zeros(numel(ap),1);
+        for iAp = 1:numel(ap)
+            apRowOfSource(iAp)         = numel(ap_recordingID);   % 0-based
+            ap_recordingID{end+1,1}    = char(SeriesID);%#ok<AGROW>
+            ap_expType{end+1,1}        = char(IC.Stim.exp_type);%#ok<AGROW>
+            ap_threshold(end+1,1)      = ap(iAp).threshold;%#ok<AGROW>
+            ap_preTime(end+1,1)        = ap(iAp).pre_time;%#ok<AGROW>
+            ap_postTime(end+1,1)       = ap(iAp).post_time;%#ok<AGROW>
+            ap_refTime(end+1,1)        = ap(iAp).ref_time;%#ok<AGROW>
+            ap_lowFilt(end+1,1)        = ap(iAp).low_filt;%#ok<AGROW>
+            ap_highFilt(end+1,1)       = ap(iAp).high_filt;%#ok<AGROW>
+            ap_filtOrd(end+1,1)        = ap(iAp).filt_ord;%#ok<AGROW>
+            ap_preStimRecTime(end+1,1) = ap(iAp).prestimrectime;%#ok<AGROW>
+            ap_postStimRecTime(end+1,1)= ap(iAp).poststimrectime;%#ok<AGROW>
+            ap_artefactRemoval(end+1,1)= double(ap(iAp).use_artefact_removal);%#ok<AGROW>
+            ap_waveThreshLow(end+1,:)  = ap(iAp).waveform_threshold_low(:)';%#ok<AGROW>
+            if isfield(ap,'MUEdate')
+                ap_MUEdate{end+1,1}    = char(string(ap(iAp).MUEdate));%#ok<AGROW>
+            else
+                ap_MUEdate{end+1,1}    = 'unknown';%#ok<AGROW>
+            end
+            if isfield(ap,'GitHash')
+                ap_GitHash{end+1,1}    = char(ap(iAp).GitHash);%#ok<AGROW>
+            else
+                ap_GitHash{end+1,1}    = 'unknown';%#ok<AGROW>
+            end
+            if isfield(ap,'GitBranch')
+                ap_GitBranch{end+1,1}  = char(ap(iAp).GitBranch);%#ok<AGROW>
+            else
+                ap_GitBranch{end+1,1}  = 'unknown';%#ok<AGROW>
+            end
+        end
+
+        % Which parameter row applies to each stimulus condition. ctc_icme
+        % records the source of every surviving stimulus row; "both" keeps IC_1,
+        % because the IC_2 copy of a duplicated stimulus was deleted along with
+        % its spikes.
+        srcIx = ones(nCond,1);
+        if numel(ap) > 1 && isfield(IC.ExpInfo,'stim_source')
+            srcIx(string(IC.ExpInfo.stim_source(:)) == "IC_2") = 2;
+        end
+        apRowOfStim = apRowOfSource(srcIx);
 
         % --- Units Table Accumulation ---
         elecNames = IC.SL.all_electrode_names;
@@ -197,6 +229,7 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
                 u_electrodeRow(end+1,1) = icElecTableOffset + elecNum; %#ok<AGROW>
                 u_recordingID{end+1,1}  = char(SeriesID); %#ok<AGROW>
                 u_stimID(end+1,1)       = stimID; %#ok<AGROW>
+                u_apRow(end+1,1)        = apRowOfStim(stimID); %#ok<AGROW>
                 u_spikeTimes_ss{end+1,1}   = sessionRelTime_s(:); %#ok<AGROW>
                 u_spikeRelTrigger{end+1,1} = relTime_s(:); %#ok<AGROW>
                 u_spikeRep{end+1,1}        = repNum(:); %#ok<AGROW>
@@ -207,7 +240,9 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
     % --- Attach Analysis Parameters Table ---
     nRec = numel(ap_recordingID);
     icAnalysisParamsTable = types.hdmf_common.DynamicTable(...
-        'description', 'Per-recording MUA spike-extraction analysis parameters.', ...
+        'description', ['MUA spike-extraction analysis parameters. One row per recording, ' ...
+        'except for concatenated recordings, which contribute one row per source ' ...
+        'recording because their per-electrode detection thresholds differ.'], ...
         'colnames', {'recording_id','exp_type','threshold','pre_time','post_time','ref_time', ...
                      'low_filt','high_filt','filt_ord','prestimrectime','poststimrectime', ...
                      'use_artefact_removal','waveform_threshold_low','MUEdate','GitHash','GitBranch'});
@@ -229,6 +264,8 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
     icAnalysisParamsTable.vectordata.set('MUEdate', types.hdmf_common.VectorData('data', ap_MUEdate, 'description','Date/time MUA extraction was run'));
     icAnalysisParamsTable.vectordata.set('GitHash', types.hdmf_common.VectorData('data', ap_GitHash, 'description','FEATHER git commit hash'));
     icAnalysisParamsTable.vectordata.set('GitBranch', types.hdmf_common.VectorData('data', ap_GitBranch, 'description','FEATHER git branch'));
+    % nRec counts analysis_parameters rows, not recordings: a concatenated
+    % recording contributes one row per source
     icAnalysisParamsTable.id = types.hdmf_common.ElementIdentifiers('data', int64(0:nRec-1)');
     
     icModule.dynamictable.set('analysis_parameters', icAnalysisParamsTable);
@@ -249,7 +286,7 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
     'convention). spike_time_rel_trigger [s] and spike_rep give the original per-trial time-after-' ...
     'trigger and repetition number for each spike. stim_id (1-based) indexes into the matching ' ...
     '<recording>_stimlist table in processing/ic_metadata describing that stimulus condition.']), ...
-    'colnames', {'spike_times','electrodes','recording_id','stim_id','spike_time_rel_trigger','spike_rep'});
+    'colnames', {'spike_times','electrodes','recording_id','stim_id','spike_time_rel_trigger','spike_rep','analysis_parameters'});
 
     % --- required typed column: spike_times (ragged) ---
     nwb.units.spike_times = types.hdmf_common.VectorData(...
@@ -292,6 +329,17 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
         'data', int64(u_stimID), ...
         'description', ['1-based row index into that recording''s stimlist table ' ...
         '(processing/ic_metadata/<recording>_stimlist) describing the stimulus condition for this row']));
+
+    % which extraction settings produced the spikes in each row: for a
+    % concatenated recording the two source recordings have different
+    % per-electrode detection thresholds, so the row is named explicitly
+    nwb.units.vectordata.set('analysis_parameters', types.hdmf_common.DynamicTableRegion(...
+        'table', types.untyped.ObjectView(icAnalysisParamsTable), ...
+        'description', ['Row of processing/ic_metadata/analysis_parameters giving the ' ...
+        'extraction settings, including the per-electrode detection thresholds, used for ' ...
+        'the spikes in this row. Concatenated recordings contribute one row per source ' ...
+        'recording.'], ...
+        'data', int64(u_apRow)));
     % --- id set LAST, now that every column is populated and heights agree ---
     nwb.units.id = types.hdmf_common.ElementIdentifiers('data', int64(0:nRows-1)');
 
