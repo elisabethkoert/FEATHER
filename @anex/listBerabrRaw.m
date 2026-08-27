@@ -39,11 +39,11 @@ function L = listBerabrRaw (obj)
                         beraDate=nan;
                     end
                     %make E
-                    L(ii).ABR_SeriesID = beraID;
-                    L(ii).ExpID = string(obj.ExpID);
-                    L(ii).allDates_ABR = beraDate;%no
-                    L(ii).dateID_ABR = min(L(ii).allDates_ABR);%no
-                    L(ii).rawDataDir = obj.RawDataDir(ii);
+                    L(1).ABR_SeriesID = beraID;
+                    L(1).ExpID = string(obj.ExpID);
+                    L(1).allDates_ABR = beraDate;%no
+                    L(1).dateID_ABR = min(L(1).allDates_ABR);%no
+                    L(1).rawDataDir = obj.RawDataDir(ii);
                 end
             end
             % the generated list will be saved. IN cse there is a

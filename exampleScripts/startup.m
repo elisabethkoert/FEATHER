@@ -6,6 +6,12 @@ clear all; close all; clear global;
 tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\forFChrimsonPaper\FEATHER';
 addpath(genpath(tb_path));
 
+%% add matnwb toolbox that allows for loading and saving in the NWB data format
+nwb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\matnwb';
+addpath(genpath(nwb_path));
+
+
+
 %% set the data paths for raw and processed data
 % raw data mapping
 map_raw_data = 'W:\UKON100';

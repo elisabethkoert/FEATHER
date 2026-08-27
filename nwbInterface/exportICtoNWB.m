@@ -152,23 +152,38 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
 
         % --- Analysis Parameters Row ---
         ap = IC.SL.analysis_parameters;
-        ap_recordingID{end+1,1}    = char(SeriesID);%#ok<AGROW>
-        ap_expType{end+1,1}        = char(IC.Stim.exp_type);%#ok<AGROW>
-        ap_threshold(end+1,1)      = ap.threshold;%#ok<AGROW>
-        ap_preTime(end+1,1)        = ap.pre_time;%#ok<AGROW>
-        ap_postTime(end+1,1)       = ap.post_time;%#ok<AGROW>
-        ap_refTime(end+1,1)        = ap.ref_time;%#ok<AGROW>
-        ap_lowFilt(end+1,1)        = ap.low_filt;%#ok<AGROW>
-        ap_highFilt(end+1,1)       = ap.high_filt;%#ok<AGROW>
-        ap_filtOrd(end+1,1)        = ap.filt_ord;%#ok<AGROW>
-        ap_preStimRecTime(end+1,1) = ap.prestimrectime;%#ok<AGROW>
-        ap_postStimRecTime(end+1,1)= ap.poststimrectime;%#ok<AGROW>
-        ap_artefactRemoval(end+1,1)= double(ap.use_artefact_removal);%#ok<AGROW>
-        ap_MUEdate{end+1,1}        = char(string(ap.MUEdate));%#ok<AGROW>
-        ap_GitHash{end+1,1}        = char(ap.GitHash);%#ok<AGROW>
-        ap_GitBranch{end+1,1}      = char(ap.GitBranch);%#ok<AGROW>
-        ap_waveThreshLow(end+1,:)  = ap.waveform_threshold_low(:)';%#ok<AGROW>
-
+        apRowOfSource = zeros(numel(ap),1);
+        for iAp = 1:numel(ap)
+            apRowOfSource(iAp)         = numel(ap_recordingID);   % 0-based
+            ap_recordingID{end+1,1}    = char(SeriesID);%#ok<AGROW>
+            ap_expType{end+1,1}        = char(IC.Stim.exp_type);%#ok<AGROW>
+            ap_threshold(end+1,1)      = ap(iAp).threshold;%#ok<AGROW>
+            ap_preTime(end+1,1)        = ap(iAp).pre_time;%#ok<AGROW>
+            ap_postTime(end+1,1)       = ap(iAp).post_time;%#ok<AGROW>
+            ap_refTime(end+1,1)        = ap(iAp).ref_time;%#ok<AGROW>
+            ap_lowFilt(end+1,1)        = ap(iAp).low_filt;%#ok<AGROW>
+            ap_highFilt(end+1,1)       = ap(iAp).high_filt;%#ok<AGROW>
+            ap_filtOrd(end+1,1)        = ap(iAp).filt_ord;%#ok<AGROW>
+            ap_preStimRecTime(end+1,1) = ap(iAp).prestimrectime;%#ok<AGROW>
+            ap_postStimRecTime(end+1,1)= ap(iAp).poststimrectime;%#ok<AGROW>
+            ap_artefactRemoval(end+1,1)= double(ap(iAp).use_artefact_removal);%#ok<AGROW>
+            ap_waveThreshLow(end+1,:)  = ap(iAp).waveform_threshold_low(:)';%#ok<AGROW>
+            if isfield(ap,'MUEdate')
+                ap_MUEdate{end+1,1}    = char(string(ap(iAp).MUEdate));%#ok<AGROW>
+            else
+                ap_MUEdate{end+1,1}    = 'unknown';%#ok<AGROW>
+            end
+            if isfield(ap,'GitHash')
+                ap_GitHash{end+1,1}    = char(ap(iAp).GitHash);%#ok<AGROW>
+            else
+                ap_GitHash{end+1,1}    = 'unknown';%#ok<AGROW>
+            end
+            if isfield(ap,'GitBranch')
+                ap_GitBranch{end+1,1}  = char(ap(iAp).GitBranch);%#ok<AGROW>
+            else
+                ap_GitBranch{end+1,1}  = 'unknown';%#ok<AGROW>
+            end
+        end
         % --- Units Table Accumulation ---
         elecNames = IC.SL.all_electrode_names;
         for iE = 1:numel(elecNames)

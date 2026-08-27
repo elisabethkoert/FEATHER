@@ -9,9 +9,17 @@ function [nwb, sessionStart] = initNWBFile(ee)
     %% Session Start Time
     % Use the earliest ABR date as the session anchor
     L = listBerabr(ee);
-    if isempty(L.dateID_ABR)
+    if isempty(L.dateID_ABR) || ~isa(L.dateID_ABR, 'datetime') 
         warning('No ABR data found to determine session_start_time. Using now().');
-        sessionStart = datetime('now');
+        enablecache off
+        L_IC=listIcme(ee);
+        enablecache on
+         if isempty(L_IC.allDates_IC) 
+                warning('No IC data found to determine session_start_time. Using now().');
+                sessionStart = datetime('now');
+            else
+                sessionStart = min(L_IC.allDates_IC);
+            end
     else
         sessionStart = L.dateID_ABR;
     end
@@ -38,40 +46,67 @@ function [nwb, sessionStart] = initNWBFile(ee)
         species = 'unknown';
     end
 
-    if ee.ExpMetaData.Gender == 'female'
-        sex = 'F';
-    elseif ee.ExpMetaData.Gender == 'male'
-        sex = 'M';
+    if isfield(ee.ExpMetaData,'Gender')
+        if strcmp(ee.ExpMetaData.Gender,'female')
+            sex = 'F';
+        elseif strcmp(ee.ExpMetaData.Gender,'male')
+            sex = 'M';
+        else
+            sex = 'unknown';
+        end
     else
-        sex = 'unknown';
+        sex = 'unknown';    
     end
 
     %% Construct / Injection Info
     if isfield(ee.ExpMetaData, 'Construct') && ~isempty(ee.ExpMetaData.Construct)
-        if isfield(ee.ExpMetaData, 'DateOfInjection') && ~isempty(ee.ExpMetaData.DateOfInjection)
+        if isfield(ee.ExpMetaData, 'DateOfInjection') && ~isempty(ee.ExpMetaData.DateOfInjection) && ~strcmp(ee.ExpMetaData.DateOfInjection,'unknown')
             injectionAgeStr = sprintf('P%iD', days(ee.ExpMetaData.DateOfInjection - ee.ExpMetaData.DateOfBirth));
         else
             injectionAgeStr = 'unknown age';
             warning('%s: DateOfInjection missing.', ee.ExpID);
         end
         constructDescr = sprintf('virus injected with %s at %s', ee.ExpMetaData.Construct, injectionAgeStr);
-        if isfield(ee.ExpMetaData, 'Titer') && ~isempty(ee.ExpMetaData.Titer)
+        if isfield(ee.ExpMetaData, 'Titer') && ~isempty(ee.ExpMetaData.Titer)  && ~strcmp(ee.ExpMetaData.Titer,'unknown')
             constructDescr = sprintf('%s (titer: %s)', constructDescr, string(ee.ExpMetaData.Titer));
         end
     else
         constructDescr = 'no virus injection recorded';
     end
 
+    if isfield(ee.ExpMetaData, 'AgeDays') && ~isempty(ee.ExpMetaData.AgeDays)  && ~strcmp(ee.ExpMetaData.AgeDays,'unknown')
+        ageStr=sprintf('P%iD', ee.ExpMetaData.AgeDays);
+    else
+        ageStr='unknown';
+    end
+
+    if isfield(ee.ExpMetaData, 'AgeDays') && ~isempty(ee.ExpMetaData.AgeDays)  && ~strcmp(ee.ExpMetaData.AgeDays,'unknown')
+        ageStr=sprintf('P%iD', ee.ExpMetaData.AgeDays);
+    else
+        ageStr='unknown';
+    end
+    
+    if isfield(ee.ExpMetaData, 'AgeDays') && ~isempty(ee.ExpMetaData.AgeDays)  && ~strcmp(ee.ExpMetaData.AgeDays,'unknown')
+        DoB=ee.ExpMetaData.DateOfBirth;
+    else
+        DoB=sessionStart;% dummy value if it is missing
+    end
+
+
     %% Create Subject
     subject = types.core.Subject( ...
         'subject_id', sprintf('%s', ee.ExpID), ...
-        'age', sprintf('P%iD', ee.ExpMetaData.AgeDays), ...
+        'age',ageStr , ...
         'age_reference', 'birth', ...
-        'date_of_birth', ee.ExpMetaData.DateOfBirth, ...
+        'date_of_birth', DoB, ...
         'species', species, ...
         'genotype', 'WT', ...
         'description', constructDescr, ...
         'sex', sex ...
     );
+
+   
+
+
     nwb.general_subject = subject;
 end

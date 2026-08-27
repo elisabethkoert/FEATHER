@@ -98,7 +98,11 @@ classdef histimg
                     dir_ix = [dir_ix ix_tmp];
                 end
             end
-            file_path=gen_dir_name(obj.D(dir_ix).dir);
+          % for now the Arivis results live on the processed data drive (not
+          % really ra data)
+            file_path =fullfile(processedDataMap,obj.D(dir_ix).dir{:});
+
+%             file_path=gen_dir_name(obj.D(dir_ix).dir);
             animal_number=char(obj.ExpID);
             animal_number=string(animal_number(4:end));
             file=dir(fullfile(file_path, obj.filename));

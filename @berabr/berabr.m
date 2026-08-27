@@ -115,7 +115,6 @@ classdef berabr
             B = obj;
             LO = load(fullfile(expProcDataDir(),load_name),'B');%loaded object
             obj = LO.B;
-
         end
 
         %% utilities

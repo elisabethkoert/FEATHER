@@ -51,6 +51,14 @@ classdef icme
             load_name = strcat("IC_",obj.ExpID,"_",obj.SeriesID,".mat");
             LO = load(fullfile(expProcDataDir,'ICME','IC',load_name),'IC');%loaded object
             obj = LO.IC;
+            % little duck tape helper to keep track of which ICMES were
+            % loaded when plotting paper figures, comment out if needed
+            logFileName = 'icme_series_log.txt';
+            fileID = fopen(logFileName, 'a');
+            if fileID ~= -1
+                fprintf(fileID, '%s\n', obj.SeriesID);
+                fclose(fileID);
+            end
         end
 
         function obj = initIcme(obj)

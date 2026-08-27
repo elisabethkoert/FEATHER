@@ -19,7 +19,12 @@ function L = listHistImgsRaw (obj)
                     if  obj.RawDataDir(ii).type == "NintendoRes"
                         % usually the rawDir wil, only have one session, but I am allowing for
                         % future exepriments
-                        D = dir(gen_dir_name(obj.RawDataDir(ii).dir));
+                        % if it lives in archive
+%                         D = dir(gen_dir_name(obj.RawDataDir(ii).dir));
+                        % for EK the results live in the home folder on the
+                        % processed data drive
+                        D = dir(fullfile(processedDataMap, obj.RawDataDir(ii).dir{:}));
+
                         %D = D(3:end);%to avoid the . ..
                         HistImgsCount = 0;
                         SeriesID = categorical();
