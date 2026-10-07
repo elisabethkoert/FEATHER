@@ -1,4 +1,4 @@
-function [VS_array,all_phases,rates] = calculateVS(obj,stim_criteria_array,t_start,t_stop)
+function [VS_array,all_phases,rates] = calculateVS(obj,stim_criteria_array,t_start,t_stop, use_rayleigh)
 % icme\calculateVS calculates the phase and VS for a protocol with repetitive stimulus presentation
 % For each electrode all spikes in the timewindow (t_start,
 % t_stop) are collected, then aligned within the stimulus cycle and the VS
@@ -16,13 +16,19 @@ function [VS_array,all_phases,rates] = calculateVS(obj,stim_criteria_array,t_sta
 %     first row should describe the stimulation rate
 %   t_start (double [ms]) start of timewindow in which to extract the spike rate
 %   t_stop (double [ms]) stop of time window in which to analysie
+%   use_rayleigh (bool) if the criterion should be applied to set VS to 0,
+%      default is true
 %
 % output
 %   VS_array (n_elecs x n_rates) caclulated VS, set to 0 if Rayleigh
-%       criterion is not fullfilled
+%       criterion is not fullfilled (and bool is set to true)
 %   all_phases (struct) with fields elecX_00Hz with the spiketimes within a
 %       phase for each electrode and rate
 %   rates (n_ratesx1) investigated rates
+
+if nargin < 5
+        use_rayleigh = true;  % default value for z
+end
 
 % % try if the calibrated Stimlist exists
 if isfield(obj.C,'stimlistCal')
@@ -69,14 +75,15 @@ for elec_ix = 1:length(all_electrode_names)
             end
             
             vs = sqrt((sum(cos(spiketimes_in_cycle))^2)+(sum(sin(spiketimes_in_cycle))^2))/length(spiketimes_in_cycle);
-            % Rayleigh test
-            L=2*length(spiketimes_in_cycle)*(vs^2);
-            
-            %L>=13.8 alpha 0.001; L>=9.21 alpha 0.01; L>=5.99 alpha 0.05
-            if L>=13.8
-                vs=vs; 
-            else 
-                vs=0;
+           
+            if use_rayleigh==true % Rayleigh test
+                L=2*length(spiketimes_in_cycle)*(vs^2);
+                %L>=13.8 alpha 0.001; L>=9.21 alpha 0.01; L>=5.99 alpha 0.05
+                if L>=13.8
+                    vs=vs; 
+                else 
+                    vs=0;
+                end
             end
             
             VS_array(elec_ix, stim_ix) =vs;

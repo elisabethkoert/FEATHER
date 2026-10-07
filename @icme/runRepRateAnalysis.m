@@ -1,4 +1,4 @@
-function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_respUnits,cutoff_fqs,all_phases] = runRepRateAnalysis(obj,stim_criteria_array,t_start,t_stop,elecs)
+function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_respUnits,cutoff_fqs,all_phases] = runRepRateAnalysis(obj,stim_criteria_array,t_start,t_stop,elecs,use_rayleigh)
 % icme\runRepRateAnalysis calculates common metrics for pulse train protocols
 % This function calculates spike rate, number of spikes per stimulus, VS, phase, and cutoff frequency
 % for a protocol with trains of stimuli presented with different stimulation rates for a subset of electrodes in a IC multiunit recording
@@ -11,6 +11,8 @@ function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_re
 %   t_start (double [ms]) start of timewindow in which to extract the spike rate
 %   t_stop (double [ms]) stop of time window in which to analyse
 %   elecs (nx1 double) list of electrode IDs to use [1:1:32]
+%   use_rayleigh (bool) if the criterion should be applied to set VS to 0,
+%      default is true
 % output
 %   rates (n_ratesx1) investigated rates
 %   meanSpikeRates_respUnits (n_elecs x n_rates double) mean spike rate
@@ -25,6 +27,11 @@ function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_re
 %   all_phases (struct) with fields elecX_00 with the spiketimes within a
 %       phase for each electrode and rate
  
+    if nargin < 6
+        use_rayleigh = true;  % default value for z
+    end
+
+
   % % try if the calibrated Stimlist exists
     if isfield(obj.C,'stimlistCal')
         OBJ_stimlist=obj.C.stimlistCal;
@@ -55,7 +62,7 @@ function [rates,meanSpikeRates_respUnits,SpikesPerStimulus_respUnits,VS_array_re
     SpikesPerStimulus_respUnits=meanNumSpikes_wholeRec_respUnits./num_stimuli';
     
     % calculate VS (and timing within phase) for all responsive units
-    [VS_array,all_phases,rates_VS] = calculateVS(obj,stim_criteria_array,t_start,t_stop);
+    [VS_array,all_phases,rates_VS] = calculateVS(obj,stim_criteria_array,t_start,t_stop,use_rayleigh);
     VS_array_respUnits=VS_array(elecs,:);
     
     % count cut-off frequencies for individual multi-units

@@ -3,11 +3,11 @@ clear all; close all; clear global;
 
 %% setting up the feather toolbox
 % add the toolbox path to your MATLAB
-tb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\forFChrimsonPaper\FEATHER';
+tb_path = 'C:\Users\Elisabeth Koert\Documents\GitFolders\FEATHER';
 addpath(genpath(tb_path));
 
 %% add matnwb toolbox that allows for loading and saving in the NWB data format
-nwb_path = 'C:\Users\koert.GWDG\FoldersUnderGitControl\matnwb';
+nwb_path = 'C:\Users\Elisabeth Koert\Documents\GitFolders\matnwb';
 addpath(genpath(nwb_path));
 
 
@@ -25,6 +25,7 @@ p=processedDataDirPath('get');
 processedDataDirPath('set', p);
 
 userID('EK'); % this is the user ID, or the analyzer
+% userID('NWBTESTforFChrimsonManuscript') 
 
 % set enable cache, this is a persistent variable to ensure control over the 
 % caching behavior of the analysis, if set to on already processed data gets
