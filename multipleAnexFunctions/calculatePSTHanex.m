@@ -71,6 +71,13 @@ function [fig,PSTH_norm,PSTH,bin_centers,resp_idx,t_onset,t_offset,peak_response
             L =listIcme(ee);
             for ii = 1: numel(L.IC_SeriesID)
                 ix_in_UT= cellfun(@(x) strcmp( x ,string(L.IC_SeriesID(ii))),UT.data(:,find(contains(UT.fieldNames,'SeriesID'))));
+                
+                % fix if the user input table has NaN instead of empty strings
+                % before comparison
+               cochlea_pos_descriptors= UT.data(:,find(contains(UT.fieldNames,'pos cochlea')));
+               isNanEntry = cellfun(@(x) (isnumeric(x) && isnan(x)) || (isstring(x) && ismissing(x)), cochlea_pos_descriptors);
+                cochlea_pos_descriptors(isNanEntry) = {''};
+                UT.data(:,find(contains(UT.fieldNames,'pos cochlea')))=cochlea_pos_descriptors;              
                 if UT.data{ix_in_UT,find(contains(UT.fieldNames,'Use'))}== -1 ||...
                         ~contains(UT.data{ix_in_UT,find(contains(UT.fieldNames,'ExpType'))},Exp_type)||...
                         contains(UT.data{ix_in_UT,find(contains(UT.fieldNames,'pos cochlea'))},'mid')||...

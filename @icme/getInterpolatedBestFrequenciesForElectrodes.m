@@ -27,7 +27,8 @@ end
 % load tontopy results
 % tonotopy_files=dir(fullfile(expProcDataDir,'ICME','*tonotopy_res_SortedByElec_dprimethr_2_mode_increasingLvl.mat'));
 %         tonotopy_files=dir(fullfile(expProcDataDir,'ICME','*tonotopy_res_SortedByElec_dprimethr_1_mode_baseline.mat'));
-tonotopy_files=dir(fullfile(expProcDataDir,'ICME','*tonotopy_res_dprimethr_1_mode_increasingLvl.mat'));
+% tonotopy_files=dir(fullfile(expProcDataDir,'ICME','*tonotopy_res_dprimethr_1_mode_increasingLvl.mat'));
+tonotopy_files=dir(fullfile(expProcDataDir,'ICME','*tonotopy_res_dprimethr_1_mode_baseline.mat'));
 
 if ~isempty(tonotopy_files)
     res=load(fullfile(tonotopy_files(1).folder,tonotopy_files(1).name));

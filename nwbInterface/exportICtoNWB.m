@@ -118,9 +118,10 @@ function nwb = exportICtoNWB(nwb, ee, sessionStart, icElecTableOffset, targetSer
             stimHeaderNames{attenuationIdx(2)} = 'intensity_percent';
         end
         nCond = size(IC.Stim.stimlist,1);
-
+        rawDataFolder=split(IC.ExpInfo.RawDataFolder{1},'\');
+        rawDataFolder=rawDataFolder{end};
         icStimTable = types.hdmf_common.DynamicTable(...
-            'description', sprintf('Stimulus conditions for IC recording %s (exp_type: %s)', SeriesID, IC.Stim.exp_type), ...
+            'description', sprintf('Stimulus conditions for IC recording %s (exp_type: %s) (RawDataFolder: %s)', SeriesID, IC.Stim.exp_type,rawDataFolder ), ...
             'colnames', [stimHeaderNames, {'stim_duration_s'}]);
         
         % if we have a calibrated stimlist we always want to only save that

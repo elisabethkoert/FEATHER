@@ -31,6 +31,17 @@ if ~icModule.dynamictable.isKey(stimKey)
         'Stimlist table "%s" not found in ic_metadata module.', stimKey);
 end
 stimTable = icModule.dynamictable.get(stimKey);
+% recover RawDataFolder from description
+pattern = 'RawDataFolder: (.*)';
+matches = regexp(stimTable.description, pattern, 'match');
+if ~isempty(matches)
+    rawDataFolderStr = split(matches{1},': '); % Get the first match (only one expected)
+    rawDataFolder=rawDataFolderStr{2};
+    rawDataFolder=strrep(rawDataFolder,')','');
+else
+    rawDataFolder = ''; % or any default value if no match is found
+end
+
 
 % Recover original stimheader names from each column's description field
 colNames_sanitized = stimTable.colnames;
@@ -105,6 +116,8 @@ ap.waveform_threshold_low = double(waveThreshRaw(apRow, :));   % 1x32
 expTypeCell = apTable.vectordata.get('exp_type').data.load();
 if iscell(expTypeCell)
     expType = char(expTypeCell{apRow});
+elseif ischar(expTypeCell)
+    expType=expTypeCell;
 else
     expType = char(expTypeCell(apRow));
 end
@@ -347,6 +360,7 @@ IC.Stim.n_rep      = nRep;
 % 8. ASSEMBLE IC.ExpInfo (minimal – matches what downstream functions read)
 % =========================================================================
 IC.ExpInfo.exp_type = expType;   % duplicated on both structs per FEATHER convention
+IC.ExpInfo.RawDataFolder={rawDataFolder};
 
 % =========================================================================
 % 9. IC.C (calibration not stored separately) but the loaded stimlist

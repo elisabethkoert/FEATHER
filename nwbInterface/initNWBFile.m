@@ -14,9 +14,9 @@ function [nwb, sessionStart] = initNWBFile(ee)
         enablecache off
         L_IC=listIcme(ee);
         enablecache on
-         if isempty(L_IC.allDates_IC) 
-                warning('No IC data found to determine session_start_time. Using now().');
-                sessionStart = datetime('now');
+         if isempty(L_IC.IC_SeriesID) 
+                warning('No IC data found to determine session_start_time. Using dummy time.');
+                sessionStart =datetime('01.01.1111');
             else
                 sessionStart = min(L_IC.allDates_IC);
             end

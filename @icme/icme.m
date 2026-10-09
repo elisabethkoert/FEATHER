@@ -53,12 +53,12 @@ classdef icme
             obj = LO.IC;
             % little duck tape helper to keep track of which ICMES were
             % loaded when plotting paper figures, comment out if needed
-            logFileName = 'icme_series_log.txt';
-            fileID = fopen(logFileName, 'a');
-            if fileID ~= -1
-                fprintf(fileID, '%s\n', obj.SeriesID);
-                fclose(fileID);
-            end
+%             logFileName = 'icme_series_log.txt';
+%             fileID = fopen(logFileName, 'a');
+%             if fileID ~= -1
+%                 fprintf(fileID, '%s\n', obj.SeriesID);
+%                 fclose(fileID);
+%             end
         end
 
         function obj = initIcme(obj)
